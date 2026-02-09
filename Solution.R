@@ -1,7 +1,5 @@
-# Test Program for Popular R Packages
-
-# List of required packages
-packages <- c("ggplot2", "dplyr", "tidyr", "lubridate", "data.table")
+# add any needed packages here separated by commas
+packages <- c()
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -11,57 +9,35 @@ for (pkg in packages) {
   }
 }
 
-# Load the packages
-library(ggplot2)
-library(dplyr)
-library(tidyr)
-library(lubridate)
-library(data.table)
+inputs <- as.character(x = readLines(con = "stdin", n = 7, warn=FALSE))
 
-# Checking R version
-cat("R version:", R.Version()$version.string, "\n")
+myFlower1 <- inputs[1]
+myFlower2 <- inputs[2]
+myFlower3 <- inputs[3]
 
-# Simple data frame for testing
-data <- data.frame(
-  Date = seq.Date(from = as.Date("2023-01-01"), by = "month", length.out = 6),
-  Value = c(10, 20, 30, 25, 15, 30)
-)
+yourInt1 <- inputs[4]
+yourInt2 <- inputs[5]
+yourInt3 <- inputs[6]
+yourInt4 <- inputs[7]
 
-cat("Original Data Frame:\n")
-print(data)
+# Define myVector containing myFlower1, myFlower2, and myFlower3 in that order
+myVector <- c(myFlower1, myFlower2, myFlower3)
 
-# Using dplyr to mutate and summarize
-summary_data <- data %>%
-  mutate(Month = month(Date)) %>%
-  group_by(Month) %>%
-  summarize(Average = mean(Value))
+# Print the first element in myVector
+print(myVector[1])
 
-cat("Summary Data (Average by Month):\n")
-print(summary_data)
+# Define yourVector containing yourInt1, yourInt2, yourInt3, and yourInt4 in that order
+yourVector <- c(yourInt1, yourInt2, yourInt3, yourInt4)
 
-# Create a plot and explicitly print it
-plot <- ggplot(data, aes(x = Date, y = Value)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Values Over Time", x = "Date", y = "Value")
+# Print the first and fourth element in yourVector
+print(yourVector[c(1,4)])
 
-# Print the plot
-print(plot)
+# Create a list, `ourList` of `myVector` and `yourVector`, in that order, giving the vector elements the names `flowers` and `numbers`.
+ourList <- list(flowers=myVector, numbers = yourVector)
 
-# Using tidyr to pivot the data
-pivot_data <- data %>%
-  pivot_longer(cols = Value, names_to = "Metric", values_to = "Value")
+# Print ourList
+print(ourList)
 
-cat("Pivoted Data:\n")
-print(pivot_data)
+# Print the list element flowers
+print(ourList$flowers)
 
-# Using lubridate to manipulate dates
-data$Date_plus_10 <- data$Date + days(10)
-cat("Data with Dates Increased by 10 Days:\n")
-print(data)
-
-# Using data.table for fast aggregation
-dt <- data.table(data)
-agg_data <- dt[, .(Total = sum(Value)), by = .(Month = month(Date))]
-cat("Aggregate Data Table:\n")
-print(agg_data)
