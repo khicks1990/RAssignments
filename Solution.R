@@ -9,35 +9,21 @@ for (pkg in packages) {
   }
 }
 
-inputs <- as.character(x = readLines(con = "stdin", n = 7, warn=FALSE))
+# Import the file homes.csv into the dataframe homes
+homes <-read.csv("homes.csv")
 
-myFlower1 <- inputs[1]
-myFlower2 <- inputs[2]
-myFlower3 <- inputs[3]
+# Display the column names
+print(colnames(homes))
 
-yourInt1 <- inputs[4]
-yourInt2 <- inputs[5]
-yourInt3 <- inputs[6]
-yourInt4 <- inputs[7]
+# Display the number of instances
+print(nrow(homes))
 
-# Define myVector containing myFlower1, myFlower2, and myFlower3 in that order
-myVector <- c(myFlower1, myFlower2, myFlower3)
+# Display the columns Price, Bath, Bed, Year, and Status for instances for which School is Edison
+print(homes[homes$School == "Edison", c("Price", "Bath", "Bed", "Year", "Status")])
 
-# Print the first element in myVector
-print(myVector[1])
+# Add the column PriceSqFt to the dataframe with the values of Price divided by Floor
+homes$PriceSqFt <- homes$Price / homes$Floor
 
-# Define yourVector containing yourInt1, yourInt2, yourInt3, and yourInt4 in that order
-yourVector <- c(yourInt1, yourInt2, yourInt3, yourInt4)
-
-# Print the first and fourth element in yourVector
-print(c(yourVector[1], yourVector[4]))
-
-# Create a list, `ourList` of `myVector` and `yourVector`, in that order, giving the vector elements the names `flowers` and `numbers`.
-ourList <- list(flowers = myVector, numbers = yourVector)
-
-# Print ourList
-print(ourList)
-
-# Print the list element flowers
-print(ourList$flowers)
+# Display the first six rows of the dataframe with the new column
+print(head(homes))
 
