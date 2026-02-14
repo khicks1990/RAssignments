@@ -13,9 +13,9 @@ for (pkg in packages) {
 cars <- read.csv("mtcars.csv")
 
 # Find the mean of the column wt
-mean <- mean(cars$wt)
+mean <- mean(cars$wt)# Your code here
 
 # Find the median of the column wt
-median <- median(cars$wt)
+median <- median(cars$wt)# Your code here
 
 print(paste0("mean = ", format(round(mean, 3)), ", median = ", format(round(median, 3))))
