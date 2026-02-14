@@ -1,5 +1,5 @@
-# add any needed packages here separated by commas
-packages <- c()
+# add needed packages here separated by commas
+packages <- c("tidyverse")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -9,21 +9,13 @@ for (pkg in packages) {
   }
 }
 
-# Import the file homes.csv into the dataframe homes
-homes <- read.csv("homes.csv")
+# Read in the file mtcars.csv
+cars <- read.csv("mtcars.csv")
 
-# Display the column names
-print(colnames(homes))
+# Find the mean of the column wt
+mean <- mean(cars$wt)
 
-# Display the number of instances
-print(nrow(homes))
+# Find the median of the column wt
+median <- median(cars$wt)
 
-# Display the columns Price, Bath, Bed, Year, and Status for instances for which School is Edison
-print(homes[homes$School == "Edison", c("Price", "Bath", "Bed", "Year", "Status")])
-
-# Add the column PriceSqFt to the dataframe with the values of Price divided by Floor
-homes$PriceSqFt <- homes$Price / homes$Floor
-
-# Display the first six rows of the dataframe with the new column
-print(head(homes))
-
+print(paste0("mean = ", format(round(mean, 3)), ", median = ", format(round(median, 3))))
