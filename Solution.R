@@ -13,10 +13,11 @@ if(IQ1 > IQ2){
 }
 
 # Calculate the probability that a randomly selected person has an IQ less than or equal to IQ1.
-probLT <- pnorm(IQ1, mean=100, sd=15)
+probLT <- pnorm(IQ1, mean = 100, sd = 15)# Your code here
 
 # Calculate the probability that a randomly selected person has an IQ between IQ1 and IQ2
-probBetw <- pnorm(IQ2, mean=100, sd=14) - pnorm(IQ1, mean=100, sd=15)
+probBetw <- pnorm(IQ2,  mean = 100, sd = 15) - pnorm(IQ1, mean = 100, sd = 15)# Your code here
 
 print(paste0("The probability that a randomly selected person has an IQ less than or equal to ", format(round(IQ1, 3)), " is ", format(round(probLT, 3)), "."))
+
 print(paste0("The probability that a randomly selected person has an IQ between ", format(round(IQ1, 3)), " and ", format(round(IQ2, 3)), " is ", format(round(probBetw, 3)),  "."))
