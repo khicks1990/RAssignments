@@ -21,40 +21,49 @@ colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728",
 # Load titanic.csv
 titanic <- read.csv("titanic.csv")
 
-# Subset the titanic dataset to include first class passengers who embarked in Southampton
+# Subset: First class passengers who embarked from Southampton
 firstSouth <- titanic |>
   filter(pclass == 1, embarked == "S")
 
-# Subset the titanic dataset to include either second or third class passenger
+# Subset: Second or Third class passengers
 secondThird <- titanic |>
   filter(pclass == 2 | pclass == 3)
 
-firstSouth |>
-group_by(pclass, sex) |>
-    summarize(n=n(), .groups="drop_last") |>
+# Print first table
+print(
+  firstSouth |>
+    group_by(pclass, sex) |>
+    summarize(n = n(), .groups = "drop_last") |>
     spread(sex, n)
-    
-secondThird |>
-group_by(pclass, alive) |>
-    summarize(n=n(), .groups="drop_last") |>
+)
+
+# Print second table
+print(
+  secondThird |>
+    group_by(pclass, alive) |>
+    summarize(n = n(), .groups = "drop_last") |>
     spread(alive, n)
+)
 
-# Create a bar chart for the first class passengers who embarked in Southampton grouped by sex
+# Bar chart 1
 png(file="titanicBar1.png")
-p <- ggplot(firstSouth, aes(x = factor(pclass), fill = sex)) +
-  geom_bar(position = "dodge") +
-  labs(x = "Class", y = "Count", fill = "Sex")
 
-ggsave("titanicBar1.png", plot=p, width=6, height=4, dpi=300)
+p <- ggplot(firstSouth, aes(x = sex)) +
+  geom_bar() +
+  labs(title = "First Class Passengers (Southampton)",
+       x = "Sex",
+       y = "Count")
 
-# Create a bar chart for the second and third class passengers grouped by survival status
+dev.off()
+
+# Bar chart 2
 png(file="titanicBar2.png")
+
 p2 <- ggplot(secondThird, aes(x = factor(pclass), fill = alive)) +
   geom_bar(position = "dodge") +
-  labs(x = "Class", y = "Count", fill = "Alive")
+  labs(title = "Second and Third Class Survival",
+       x = "Passenger Class",
+       y = "Count",
+       fill = "Alive")
 
-ggsave("titanicBar2.png", plot=p2, width=6, height=4, dpi=300)
-
-
-
-
+dev.off()
