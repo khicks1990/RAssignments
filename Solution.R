@@ -49,4 +49,4 @@ png(file="titanicBar2.png")
 
 p2 <- ggplot(secondThird, aes(x=alive, fill=alive))+geom_bar()+labs(x="Alive", y="Count")
 
-ggsave("titanicBar2.png", plot=p, width=6, height=4, dpi=300)
+ggsave("titanicBar2.png", plot=p2, width=6, height=4, dpi=300)
