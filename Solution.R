@@ -1,26 +1,35 @@
+#add needed packages here
+packages <- c("tidyverse")
+
+# Install packages if not already installed
+for (pkg in packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    cat("Installing package:", pkg, "\n")
+    install.packages(pkg)
+  }
+}
+
 suppressPackageStartupMessages(library(tidyverse))
 
-# Read in hmeq_small.csv
-hmeq <- read.csv("hmeq_small.csv") # Your code here
+# Load the hmeq dataset
+hmeq <- read.csv("hmeq_small.csv")
 
-hmeq$CLNO <- as.numeric(hmeq$CLNO)
+# Drop rows with NAs
+hmeq <- drop_na(hmeq)
 
-# Create a new data frame with the rows with missing values dropped
-hmeqDelete <- na.omit(hmeq)# Your code here
+# Standardize the columns LOAN and VALUE
+hmeqStand <- hmeq %>%
+ mutate(
+  LOAN_STAND=as.vector(scale(LOAN)),
+  VALUE_STAND=as.vector(scale(VALUE))
+  )
 
-# Calculate the means of CLNO and YOJ
-meanCLNO = mean(hmeq$CLNO, na.rm=TRUE)
-meanYOJ = mean(hmeq$YOJ, na.rm=TRUE)
+# Normalize the columns LOAN and VALUE
+hmeqNorm <- hmeq %>% mutate(LOAN_NORM=(LOAN -min(LOAN)) / (max(LOAN)-min(LOAN)),
+VALUE_NORM = (VALUE-min(VALUE)) / (max(VALUE) - min(VALUE)))
 
-# Create a new data frame with the missing values of CLNO and YOJ filled in by the mean of the column
-hmeqReplace <- hmeq %>%
-  mutate(
-    CLNO = ifelse(is.na(CLNO), meanCLNO, CLNO),
-    YOJ  = ifelse(is.na(YOJ),  meanYOJ,  YOJ)
-  )# Your code here
-                        
-# Print the summary for each new data frame
-print("Summary of hmeqDelete is ")
-print(summary(hmeqDelete))
-print("Summary of hmeqReplace is ")
-print(summary(hmeqReplace))
+# Print the summaries of the data frames hmeqStand and hmeqNorm
+print("Summary of standardized data:")
+summary(hmeqStand)
+print("Summary of normalized data:")
+summary(hmeqNorm)
