@@ -17,17 +17,17 @@ summary(mpg)
 # Create a scatter plot of weight vs mpg with origin represented by color
 #  x label should be "Weight" and y label should be "MPG"
 png(file="mpg_scatter.png")
-mpg |>
-    ggplot(aes(x=weight, y=mpg)) + 
+p <-
+    ggplot(mpg, aes(x=weight, y=mpg)) + 
     geom_point(aes(col=origin)) + 
     scale_color_manual(values=colors) + 
     labs(x="Weight", y="MPG", 
          color="Origin")
 
-
+ggsave("mpg_scatter.png", plot=p, width=6, height=4, dpi=300)
 
 #mpg <- read.csv("mpg.csv")
 #library(ggplot2)
 
-p <- ggplot(mpg, aes(x=weight, y=mpg, color=factor(origin))) + geom_point()
-ggsave("mpg_scatter.png", plot=p, width=6, height=4, dpi=300)
+#p <- ggplot(mpg, aes(x=weight, y=mpg, color=factor(origin))) + geom_point()
+#ggsave("mpg_scatter.png", plot=p, width=6, height=4, dpi=300)
