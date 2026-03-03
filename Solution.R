@@ -1,20 +1,19 @@
 suppressPackageStartupMessages(library(tidyverse))
 
 # Read in hmeq_small.csv
-hmeq <- read.csv("hmeq_small.csv")
+hmeq <- # Your code here
 
 hmeq$CLNO <- as.numeric(hmeq$CLNO)
 
 # Create a new data frame with the rows with missing values dropped
-hmeqDelete <- na.omit(hmeq)
+hmeqDelete <- # Your code here
 
 # Calculate the means of CLNO and YOJ
 meanCLNO = mean(hmeq$CLNO, na.rm=TRUE)
 meanYOJ = mean(hmeq$YOJ, na.rm=TRUE)
 
 # Create a new data frame with the missing values of CLNO and YOJ filled in by the mean of the column
-hmeqReplace <- hmeq %>% mutate(CLNO=ifelse(is.na(CLNO), meanCLNO, CLNO), YOJ=ifelse(is.na(YOJ), meanYOJ, YOJ))
-  
+hmeqReplace <- # Your code here
                         
 # Print the summary for each new data frame
 print("Summary of hmeqDelete is ")
