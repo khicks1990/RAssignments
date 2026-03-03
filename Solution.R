@@ -1,4 +1,4 @@
-#add any needed packages here separated by commas
+# add any needed packages here separated by commas
 packages <- c("sqldf")
 
 # Install packages if not already installed
@@ -25,36 +25,18 @@ print(sqldf("SELECT Title FROM Movie WHERE Rating='G'"))
 
 # Convert the given SQL statements
 
-# SELECT Title 
+# SELECT Title, ReleaseDate
 # FROM Movie
-# WHERE ReleaseDate > "2020-01-01"
-print(
-  sqldf("
-    SELECT Title
-    FROM Movie
-    WHERE ReleaseDate > '2020-01-01'
-  ")
-)
+# WHERE Budget > Gross
+print(sqldf("SELECT Title, ReleaseDate FROM Movie WHERE Budget > Gross"))
+
 
 # SELECT Title
 # FROM Movie
-# WHERE Rating In ("G", "PG")
-print(
-  sqldf("
-    SELECT Title
-    FROM Movie
-    WHERE Rating IN ('G', 'PG')
-  ")
-)
+# WHERE Budget < Gross AND Rating = "G"
+print(sqldf("SELECT Title FROM Movie WHERE Budget < Gross AND Rating = 'G'"))
 
-# SELECT Title
-# FROM Movie 
-# WHERE Rating = "PG-13" and Year >= 2008 
-print(
-  sqldf("
-    SELECT Title
-    FROM Movie
-    WHERE Rating = 'PG-13'
-      AND Year >= 2008
-  ")
-)
+# SELECT Title, Year, Budget
+# FROM Movie
+# WHERE Budget > 300000000
+print(sqldf("SELECT Title, Year, Budget FROM Movie WHERE Budget > 300000000"))
