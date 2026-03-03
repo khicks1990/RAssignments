@@ -20,18 +20,19 @@ colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728",
             "#bcbd22", "#17becf")
             
 # Load the data set mpg
-mpg <- read.csv("mpg.csv")
+mpg <- read_csv("mpg.csv")# Your code here
 
 # Print summary of data frame
-summary(mpg)
+print(summary(mpg))# Your code here
 
 # Create a scatter plot of weight vs mpg with origin represented by color
 #  x label should be "Weight" and y label should be "MPG"
-png(file="mpgScatter.png")
+png(file="mpgScatterK.png")
 
-ggplot(mpg, aes(x = weight, y = mpg, color = origin)) +
-geom_point() +
-labs(x = "Weight", y = "MPG") +
-scale_color_manual(values = colors)
+p <- ggplot(mpg, aes(x = weight, y = mpg, color = factor(origin))) +
+  geom_point() +
+  labs( x = "Weight",
+        y = "MPG",
+        color = "Origin")
 
-dev.off()
+ggsave("mpgScatterK.png", plot=p, width=6, height=4, dpi=300)
