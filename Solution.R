@@ -20,7 +20,7 @@ colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728",
             "#bcbd22", "#17becf")
             
 # Load the data set mpg
-mpg <- read_csv("mpg.csv")
+mpg <- read.csv("mpg.csv")
 
 # Print summary of data frame
 summary(mpg)
@@ -30,7 +30,8 @@ summary(mpg)
 png(file="mpgScatter.png")
 
 ggplot(mpg, aes(x = weight, y = mpg, color = origin)) +
-  geom_point() +
-  labs(x = "Weight", y = "MPG")
+geom_point() +
+labs(x = "Weight", y = "MPG") +
+scale_color_manual(values = colors)
 
 dev.off()
