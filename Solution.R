@@ -28,10 +28,15 @@ print(summary(mpg))
 # Create a scatter plot of weight vs mpg with origin represented by color
 #  x label should be "Weight" and y label should be "MPG"
 png(file="mpgScatter.png")
-ggplot(mpg, aes(x = weight, y = mpg, color = origin)) +
-  geom_point() +
+
+# Your code here
+p <- ggplot(mpg, aes(x = weight, y = mpg, color = factor(origin))) + 
+  geom_point() + 
+  scale_color_manual(values = colors) + 
   labs(x = "Weight", y = "MPG")
+
+print(p)
 
 dev.off()
 
-
+print(p)
