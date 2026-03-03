@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidyverse")
+packages <- c("ggplot2")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -9,7 +9,7 @@ for (pkg in packages) {
   }
 }
 
-suppressPackageStartupMessages(library(tidyverse))
+library(ggplot2)
 
 # Increases font size for all ggplot2 plots
 theme_set(theme_gray(base_size=18))
