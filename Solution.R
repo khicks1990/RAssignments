@@ -1,23 +1,51 @@
-# Functions from base and stats package used, 
-# no additional packages needed.
+# add any needed packages here separated by commas
+packages <- c()
 
-# Input two IQs, making sure that IQ1 is less than IQ2
-inputs <- as.integer(x = readLines(con = "stdin", n = 2, warn=FALSE))
-
-IQ1 <- inputs[1]
-IQ2 <- inputs[2]
-
-if(IQ1 > IQ2){
-    print("IQ1 should be less than IQ2. Enter numbers again.")
-    quit(save = "no")
+# Install packages if not already installed
+for (pkg in packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    cat("Installing package:", pkg, "\n")
+    install.packages(pkg)
+  }
 }
 
-# Calculate the probability that a randomly selected person has an IQ less than or equal to IQ1.
-probLT <- pnorm(IQ1, mean = 100, sd = 15)# Your code here
+inputs <- as.character(x = readLines(con = "stdin", n = 7, warn=FALSE))
 
-# Calculate the probability that a randomly selected person has an IQ between IQ1 and IQ2
-probBetw <- pnorm(IQ2,  mean = 100, sd = 15) - pnorm(IQ1, mean = 100, sd = 15)# Your code here
+myFlower1 <- inputs[1]
+myFlower2 <- inputs[2]
+myFlower3 <- inputs[3]
 
-print(paste0("The probability that a randomly selected person has an IQ less than or equal to ", format(round(IQ1, 3)), " is ", format(round(probLT, 3)), "."))
+yourInt1 <- inputs[4]
+yourInt2 <- inputs[5]
+yourInt3 <- inputs[6]
+yourInt4 <- inputs[7]
 
-print(paste0("The probability that a randomly selected person has an IQ between ", format(round(IQ1, 3)), " and ", format(round(IQ2, 3)), " is ", format(round(probBetw, 3)),  "."))
+# Define myVector containing myFlower1, myFlower2, and myFlower3 in that order
+myVector <- c(myFlower1, myFlower2, myFlower3)
+
+# Print the first element in myVector
+print(myVector[1])
+
+# Define yourVector containing yourInt1, yourInt2, yourInt3, and yourInt4 in that order
+yourVector <- c(yourInt1, yourInt2, yourInt3, yourInt4)
+
+# Print the first and fourth element in yourVector
+print(c(yourVector[1], yourVector[4]))
+
+# Create a list, `ourList` of `myVector` and `yourVector`, in that order, giving the vector elements the names `flowers` and `numbers`.
+ourList <- list(
+  flowers = myVector,
+  numbers = yourVector
+)
+
+# Print ourList
+print(ourList)
+
+# Print the list element flowers
+print(ourList$flowers)
+
+
+
+
+
+
