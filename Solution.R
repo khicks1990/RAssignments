@@ -1,15 +1,4 @@
-# add needed packages here separated by commas
-packages <- c("ggplot2")
-
-# Install packages if not already installed
-for (pkg in packages) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    cat("Installing package:", pkg, "\n")
-    install.packages(pkg)
-  }
-}
-
-library(ggplot2)
+suppressPackageStartupMessages(library(tidyverse))
 
 # Increases font size for all ggplot2 plots
 theme_set(theme_gray(base_size=18))
@@ -35,4 +24,10 @@ mpg |>
     labs(x="Weight", y="MPG", 
          color="Origin")
 
-dev.off()
+
+
+#mpg <- read.csv("mpg.csv")
+#library(ggplot2)
+
+p <- ggplot(mpg, aes(x=weight, y=mpg, color=factor(origin))) + geom_point()
+ggsave("mpg_scatter.png", plot=p, width=6, height=4, dpi=300)
