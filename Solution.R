@@ -42,8 +42,12 @@ group_by(pclass, alive) |>
 
 # Create a bar chart for the first class passengers who embarked in Southampton grouped by sex
 png(file="titanicBar1.png")
-print(ggplot(firstSouth, aes(x = sex, fill = sex)) +
+p <- ggplot(firstSouth, aes(x = sex, fill = sex)) +
   geom_bar() +
   scale_fill_manual(values = colors) + 
-  labs(x = "Sex", y = "Count"))
- 
+  labs(x = "Sex", y = "Count")
+
+print(p)
+
+ggsave("titanicBar1.png", plot=p1, width=6, height=4, dpi=300)
+print(p)
