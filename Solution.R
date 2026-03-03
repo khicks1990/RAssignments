@@ -19,13 +19,16 @@ colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728",
             "#9467bd","#8c564b", "#e377c2", "#7f7f7f",
             "#bcbd22", "#17becf")
 # Load titanic.csv
-titanic <- read.csv("titanic.csv")# Your code here
+titanic <- read.csv("titanic.csv")
+# Your code here
 
 # Subset the titanic dataset to include first class passengers who embarked in Southampton
-firstSouth <- titanic |> filter(pclass == 1, embarked == "S")# Your code here
+firstSouth <- titanic |>
+  filter(pclass == 1, embarked == "S")# Your code here
 
 # Subset the titanic dataset to include either second or third class passenger
-secondThird <- titanic |> filter(pclass %in% c(2, 3))# Your code here
+secondThird <- titanic |>
+  filter(pclass %in% c(2, 3))# Your code here
 
 firstSouth |>
 group_by(pclass, sex) |>
@@ -39,16 +42,16 @@ group_by(pclass, alive) |>
 
 # Create a bar chart for the first class passengers who embarked in Southampton grouped by sex
 png(file="titanicBar1.png")
-p1 <- ggplot(firstSouth, aes(x = sex)) +
+ggplot(firstSouth, aes(x = sex, fill = sex)) +
   geom_bar() +
+  scale_fill_manual(values = colors) + 
   labs(x = "Sex", y = "Count")
-
-ggsave("titanicBar1.png", plot=p1, width=6, height=4, dpi=300)
+dev.off()# Your code here
 
 # Create a bar chart for the second and third class passengers grouped by survival status
 png(file="titanicBar2.png")
-p2 <- ggplot(secondThird, aes(x = alive)) +
+ggplot(secondThird, aes(x = alive, fill = alive)) +
   geom_bar() +
-  labs(x = "Alive", y = "Count")
-
-ggsave("titanicBar2.png", plot=p2, width=6, height=4, dpi=300)
+  scale_fill_manual(values = colors) +
+  labs(x = "Survived", y = "Count")
+dev.off()# Your code here
