@@ -27,16 +27,17 @@ print(summary(mpg))
 
 # Create a scatter plot of weight vs mpg with origin represented by color
 #  x label should be "Weight" and y label should be "MPG"
+
 png(file="mpgScatter.png")
 
-# Your code here
+# creates plot and saves to to the p variable
 p <- ggplot(mpg, aes(x = weight, y = mpg, color = factor(origin))) + 
   geom_point() + 
   scale_color_manual(values = colors) + 
   labs(x = "Weight", y = "MPG")
 
-print(p)
+# saves to the mpgScatter.png file
+ggsave("titanicBar1.png", plot=p1, width=6, height=4, dpi=300)
 
-dev.off()
-
+# displays in codespace
 print(p)
