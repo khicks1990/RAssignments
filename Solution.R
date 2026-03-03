@@ -1,5 +1,5 @@
 # add any needed packages here separated by commas
-packages <- c("sqldf")
+packages <- c()
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -30,7 +30,6 @@ print(sqldf("SELECT Title FROM Movie WHERE Rating='G'"))
 # WHERE Budget > Gross
 print(sqldf("SELECT Title, ReleaseDate FROM Movie WHERE Budget > Gross"))
 
-
 # SELECT Title
 # FROM Movie
 # WHERE Budget < Gross AND Rating = "G"
@@ -40,3 +39,4 @@ print(sqldf("SELECT Title FROM Movie WHERE Budget < Gross AND Rating = 'G'"))
 # FROM Movie
 # WHERE Budget > 300000000
 print(sqldf("SELECT Title, Year, Budget FROM Movie WHERE Budget > 300000000"))
+
