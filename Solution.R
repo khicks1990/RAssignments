@@ -1,4 +1,4 @@
-# add needed packages here
+//add needed packages here
 packages <- c("tidyverse")
 
 # Install packages if not already installed
@@ -12,27 +12,27 @@ for (pkg in packages) {
 suppressPackageStartupMessages(library(tidyverse))
 
 # Load the hmeq dataset
-hmeq <- read.csv("hmeq_small.csv")
+hmeq <- read.csv("hmeq_small.csv)# Your code here
 
 # Drop rows with NAs
 hmeq <- drop_na(hmeq)
 
 # Standardize the columns LOAN and VALUE
 hmeqStand <- hmeq %>%
-mutate(
-  LOAN_STAND = (LOAN - mean(LOAN)) / sd(LOAN),
-  VALUE_STAND = (VALUE - mean(VALUE)) / sd(VALUE)
-)
+  mutate(
+    LOAN_STAND = as.numeric(scale(LOAN)),
+    VALUE_STAND = as.numeric(scale(VALUE))
+  )# Your code here
 
 # Normalize the columns LOAN and VALUE
 hmeqNorm <- hmeq %>%
-mutate(
-  LOAN_NORM = (LOAN - min(LOAN)) / (max(LOAN) - min(LOAN)),
-  VALUE_NORM = (VALUE - min(VALUE)) / (max(VALUE) - min(VALUE))
-)
+  mutate(
+    LOAN_NORM = (LOAN - min(LOAN)) / (max(LOAN) - min(LOAN)),
+    VALUE_NORM = (VALUE - min(VALUE)) / (max(VALUE) - min(VALUE))
+  )# Your code here
 
 # Print the summaries of the data frames hmeqStand and hmeqNorm
 print("Summary of standardized data:")
-print(summary(hmeqStand))
+summary(hmeqStand)# Your code here
 print("Summary of normalized data:")
-print(summary(hmeqNorm))
+summary(hmeqNorm)# Your code here
