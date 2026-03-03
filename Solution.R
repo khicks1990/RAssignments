@@ -1,42 +1,22 @@
-# add any needed packages here separated by commas
-packages <- c()
+suppressPackageStartupMessages(library(tidyverse))
 
-# Install packages if not already installed
-for (pkg in packages) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    cat("Installing package:", pkg, "\n")
-    install.packages(pkg)
-  }
-}
+# Read in hmeq_small.csv
+hmeq <- # Your code here
 
-# Load the package
-library(sqldf)
+hmeq$CLNO <- as.numeric(hmeq$CLNO)
 
-Movie <- read.csv("movies.csv")
+# Create a new data frame with the rows with missing values dropped
+hmeqDelete <- # Your code here
 
-Movie$ReleaseDate <- as.Date(Movie$ReleaseDate, "%d-%b-%y")
-print(head(Movie))
+# Calculate the means of CLNO and YOJ
+meanCLNO = mean(hmeq$CLNO, na.rm=TRUE)
+meanYOJ = mean(hmeq$YOJ, na.rm=TRUE)
 
-# EXAMPLE
-# SELECT Title
-# FROM Movie
-# WHERE Rating = "G"
-print(sqldf("SELECT Title FROM Movie WHERE Rating='G'"))
-
-# Convert the given SQL statements
-
-# SELECT Title, ReleaseDate
-# FROM Movie
-# WHERE Budget > Gross
-print(sqldf("SELECT Title, ReleaseDate FROM Movie WHERE Budget > Gross"))
-
-# SELECT Title
-# FROM Movie
-# WHERE Budget < Gross AND Rating = "G"
-print(sqldf("SELECT Title FROM Movie WHERE Budget < Gross AND Rating = 'G'"))
-
-# SELECT Title, Year, Budget
-# FROM Movie
-# WHERE Budget > 300000000
-print(sqldf("SELECT Title, Year, Budget FROM Movie WHERE Budget > 300000000"))
-
+# Create a new data frame with the missing values of CLNO and YOJ filled in by the mean of the column
+hmeqReplace <- # Your code here
+                        
+# Print the summary for each new data frame
+print("Summary of hmeqDelete is ")
+summary(hmeqDelete)
+print("Summary of hmeqReplace is ")
+summary(hmeqReplace)
