@@ -1,7 +1,5 @@
-# Test Program for Popular R Packages
-
-# List of required packages
-packages <- c("ggplot2", "dplyr", "tidyr", "lubridate", "data.table")
+# add needed packages here separated by commas
+packages <- c("tidyverse")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -11,57 +9,34 @@ for (pkg in packages) {
   }
 }
 
-# Load the packages
-library(ggplot2)
-library(dplyr)
-library(tidyr)
-library(lubridate)
-library(data.table)
+suppressPackageStartupMessages(library(tidyverse))
 
-# Checking R version
-cat("R version:", R.Version()$version.string, "\n")
+# Increases font size for all ggplot2 plots
+theme_set(theme_gray(base_size=18))
 
-# Simple data frame for testing
-data <- data.frame(
-  Date = seq.Date(from = as.Date("2023-01-01"), by = "month", length.out = 6),
-  Value = c(10, 20, 30, 25, 15, 30)
-)
+# List of colors for customizing plots
+colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728",
+            "#9467bd","#8c564b", "#e377c2", "#7f7f7f",
+            "#bcbd22", "#17becf")
+            
+# Load the data set mpg
+mpg <- read.csv("mpg.csv")
 
-cat("Original Data Frame:\n")
-print(data)
+# Print summary of data frame
+print(summary(mpg))
 
-# Using dplyr to mutate and summarize
-summary_data <- data %>%
-  mutate(Month = month(Date)) %>%
-  group_by(Month) %>%
-  summarize(Average = mean(Value))
+# Create a scatter plot of weight vs mpg with origin represented by color
+#  x label should be "Weight" and y label should be "MPG"
+png(file="mpgScatter.png")
 
-cat("Summary Data (Average by Month):\n")
-print(summary_data)
+# Your code here
+p <- ggplot(mpg, aes(x = weight, y = mpg, color = factor(origin))) + 
+  geom_point() + 
+  scale_color_manual(values = colors) + 
+  labs(x = "Weight", y = "MPG")
 
-# Create a plot and explicitly print it
-plot <- ggplot(data, aes(x = Date, y = Value)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Values Over Time", x = "Date", y = "Value")
+print(p)
 
-# Print the plot
-print(plot)
+dev.off()
 
-# Using tidyr to pivot the data
-pivot_data <- data %>%
-  pivot_longer(cols = Value, names_to = "Metric", values_to = "Value")
-
-cat("Pivoted Data:\n")
-print(pivot_data)
-
-# Using lubridate to manipulate dates
-data$Date_plus_10 <- data$Date + days(10)
-cat("Data with Dates Increased by 10 Days:\n")
-print(data)
-
-# Using data.table for fast aggregation
-dt <- data.table(data)
-agg_data <- dt[, .(Total = sum(Value)), by = .(Month = month(Date))]
-cat("Aggregate Data Table:\n")
-print(agg_data)
+print(p)
