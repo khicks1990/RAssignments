@@ -32,7 +32,7 @@ p <-
     ggplot(mpg, aes(x=weight, y=mpg)) + 
     geom_point(aes(col=origin)) + 
     scale_color_manual(values=colors) + 
-    labs(x="Weighted", y="MPG", 
+    labs(x="Weight", y="MPG", 
          color="Origin")
 
-  #       p <- ggplot(mpg, aes(x=weight, y=mpg, color=factor(origin))) + geom_point()
+ggsave("mpg_scatter.png", plot=p, width=6, height=4, dpi=300)
