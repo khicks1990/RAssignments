@@ -54,7 +54,7 @@ p <- ggplot(firstSouth, aes(x = sex)) +
        x = "Sex",
        y = "Count")
 
-dev.off()
+ggsave("titanicBar1.png", plot=p, width=10, height=10, dpi=300)
 
 # Bar chart 2
 png(file="titanicBar2.png")
@@ -66,4 +66,4 @@ p2 <- ggplot(secondThird, aes(x = factor(pclass), fill = alive)) +
        y = "Count",
        fill = "Alive")
 
-dev.off()
+ggsave("titanicBar2.png", plot=p2, width=6, height=4, dpi=300)
