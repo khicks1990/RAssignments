@@ -21,6 +21,6 @@ hmeqReplace <- hmeq |>
                         
 # Print the summary for each new data frame
 print("Summary of hmeqDelete is ")
-summary(hmeqDelete)
+print(summary(hmeqDelete))
 print("Summary of hmeqReplace is ")
-summary(hmeqReplace)
+print(summary(hmeqReplace))
