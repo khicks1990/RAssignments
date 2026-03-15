@@ -1,4 +1,4 @@
-# add needed packages here
+# add needed packages here separated by commas
 packages <- c("tidyverse")
 
 # Install packages if not already installed
@@ -11,29 +11,28 @@ for (pkg in packages) {
 
 suppressPackageStartupMessages(library(tidyverse))
 
-# Load the hmeq dataset
-hmeq <- read_csv("hmeq_small.csv", show_col_types = FALSE)# Your code here
+# Increases font size for all ggplot2 plots
+theme_set(theme_gray(base_size=18))
 
-# Drop rows with NAs
-hmeq <- drop_na(hmeq)
+# List of colors for customizing plots
+colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728",
+            "#9467bd","#8c564b", "#e377c2", "#7f7f7f",
+            "#bcbd22", "#17becf")
+            
+# Load the data set mpg
+mpg <- read_csv("mpg.csv")# Your code here
 
-# Standardize the columns LOAN and VALUE
-hmeqStand <- hmeq %>%
-  mutate(
-    LOAN_STAND = as.numeric(scale(LOAN)),
-    VALUE_STAND = as.numeric(scale(VALUE))
-  )# Your code here
+# Print summary of data frame
+print(summary(mpg))# Your code here
 
-# Normalize the columns LOAN and VALUE
-hmeqNorm <- hmeq %>%
-  mutate(
-    LOAN_NORM = (LOAN - min(LOAN)) / (max(LOAN) - min(LOAN)),
-    VALUE_NORM = (VALUE - min(VALUE)) / (max(VALUE) - min(VALUE))
-  )# Your code here
+# Create a scatter plot of weight vs mpg with origin represented by color
+#  x label should be "Weight" and y label should be "MPG"
+png(file="mpgScatter.png")
 
-# Print the summaries of the data frames hmeqStand and hmeqNorm
-print("Summary of standardized data:")
-print(summary(hmeqStand))# Your code here
+ggplot(mpg, aes(x = weight, y = mpg, color = factor(origin))) +
+  geom_point() +
+  labs( x = "Weight",
+        y = "MPG",
+        color = "Origin")
 
-print("Summary of normalized data:")
-print(summary(hmeqNorm))# Your code here
+dev.off()# Your code here
