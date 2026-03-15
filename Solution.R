@@ -1,43 +1,26 @@
-# add needed packages here separated by commas
-packages <- c("tidyverse")
-
-# Install packages if not already installed
-for (pkg in packages) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    cat("Installing package:", pkg, "\n")
-    install.packages(pkg)
-  }
-}
-
 suppressPackageStartupMessages(library(tidyverse))
 
-# Increases font size for all ggplot2 plots
-theme_set(theme_gray(base_size=18))
+# Read in hmeq_small.csv
+hmeq <- read_csv("hmeq_small.csv", show_col_types = FALSE)# Your code here
 
-# List of colors for customizing plots
-colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728",
-            "#9467bd","#8c564b", "#e377c2", "#7f7f7f",
-            "#bcbd22", "#17becf")
-            
-# Load the data set mpg
-mpg <- read.csv("mpg.csv")
+hmeq$CLNO <- as.numeric(hmeq$CLNO)
 
-# Print summary of data frame
-print(summary(mpg))
+# Create a new data frame with the rows with missing values dropped
+hmeqDelete <- hmeq %>% drop_na()# Your code here
 
-# Create a scatter plot of weight vs mpg with origin represented by color
-#  x label should be "Weight" and y label should be "MPG"
+# Calculate the means of CLNO and YOJ
+meanCLNO = mean(hmeq$CLNO, na.rm=TRUE)
+meanYOJ = mean(hmeq$YOJ, na.rm=TRUE)
 
-png(file="mpgScatter.png")
-
-# creates plot and saves to to the p variable
-p <- ggplot(mpg, aes(x = weight, y = mpg, color = factor(origin))) + 
-  geom_point() + 
-  scale_color_manual(values = colors) + 
-  labs(x = "Weight", y = "MPG")
-
-# saves to the mpgScatter.png file
-ggsave("titanicBar1.png", plot=p1, width=6, height=4, dpi=300)
-
-# displays in codespace
-print(p)
+# Create a new data frame with the missing values of CLNO and YOJ filled in by the mean of the column
+hmeqReplace <- hmeq %>%
+  mutate(
+    CLNO = if_else(is.na(CLNO), meanCLNO, CLNO),
+    YOJ = if_else(is.na(YOJ), meanYOJ, YOJ)
+  )# Your code here
+                        
+# Print the summary for each new data frame
+print("Summary of hmeqDelete is ")
+print(summary(hmeqDelete))
+print("Summary of hmeqReplace is ")
+print(summary(hmeqReplace))
