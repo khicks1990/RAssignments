@@ -19,16 +19,43 @@ colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728",
             "#9467bd","#8c564b", "#e377c2", "#7f7f7f",
             "#bcbd22", "#17becf")
             
-# Load the data set mpg
-mpg <- read.csv("mpg.csv")
+# Load titanic.csv
+titanic <- read_csv("titanic.csv")
 
-# Print summary of data frame
-summary(mpg)
+# Subset the titanic dataset to include first class passengers who embarked in Southampton
+firstSouth <- titanic |> filter(pclass == 1, embarked == "S")
 
-# Create a scatter plot of weight vs mpg with origin represented by color
-#  x label should be "Weight" and y label should be "MPG"
-png(file="mpgScatter.png")
+# Subset the titanic dataset to include either second or third class passenger
+secondThird <- titanic |> filter(pclass %in% c(2, 3))
 
-ggplot(mpg, aes(x=weight, y=mpg, color=origin))+geom_point()+labs(x="Weights", y= "MPG")
+print(
+  firstSouth |>
+    group_by(pclass, sex) |>
+    summarize(n=n(), .groups="drop_last") |>
+    spread(sex, n)
+)
+    
+print(
+  secondThird |>
+    group_by(pclass, alive) |>
+    summarize(n=n(), .groups="drop_last") |>
+    spread(alive, n)
+)
 
-dev.off()
+# Create a bar chart for the first class passengers who embarked in Southampton grouped by sex
+png(file="titanicBar1.png")
+p <-
+  ggplot(firstSouth, aes(x = sex, fill = sex)) +
+  geom_bar() +
+  labs(x = "Sex", y = "Count") +
+  scale_fill_manual(values = colors)
+ggsave("titanicBar1.png", plot=p, width=6, height=4, dpi=300)
+
+# Create a bar chart for the second and third class passengers grouped by survival status
+png(file="titanicBar2.png")
+p2 <-
+  ggplot(secondThird, aes(x = factor(pclass), fill = alive)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Pclass", y = "Count") +
+  scale_fill_manual(values = colors)
+ggsave("titanicBar2.png", plot=p2, width=6, height=4, dpi=300)
