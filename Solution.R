@@ -30,33 +30,39 @@ secondThird <- titanic |>
   filter(pclass == 2 | pclass == 3)
 
 print(
-  firstSouth |>
-    group_by(pclass, sex) |>
-    summarize(n = n(), .groups = "drop_last") |>
-    spread(sex, n)
+firstSouth |>
+  group_by(pclass, sex) |>
+  summarize(n=n(), .groups="drop_last") |>
+  spread(sex, n)
 )
+    
 print(
-  secondThird |>
-    group_by(pclass, alive) |>
-    summarize(n = n(), .groups = "drop_last") |>
-    spread(alive, n)
+secondThird |>
+  group_by(pclass, alive) |>
+  summarize(n=n(), .groups="drop_last") |>
+  spread(alive, n)
 )
-# Create a bar chart for the first class passengers who embarked in Southampton grouped by sex
-png(file = "titanicBar1.png")
 
-p <- ggplot(firstSouth, aes(x = sex, fill = sex)) +
-  geom_bar() +
-  labs(x = "Sex", y = "Count") +
-  scale_fill_manual(values = colors)
+# Create a bar chart for the first class passengers who embarked in Southampton grouped by sex
+p <- ggplot(firstSouth, aes(x = factor(pclass), fill = sex)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Class", y = "Count", fill = "Sex")
 
 ggsave("titanicBar1.png", plot = p, width = 6, height = 4, dpi = 300)
 
 # Create a bar chart for the second and third class passengers grouped by survival status
-png(file = "titanicBar2.png")
-
-p2 <- ggplot(secondThird, aes(x = alive, fill = alive)) +
-  geom_bar() +
-  labs(x = "Survival Status", y = "Count") +
-  scale_fill_manual(values = colors)
+p2 <- ggplot(secondThird, aes(x = factor(pclass), fill = alive)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Class", y = "Count", fill = "Alive")
 
 ggsave("titanicBar2.png", plot = p2, width = 6, height = 4, dpi = 300)
+
+
+
+
+
+
+
+
+
+
