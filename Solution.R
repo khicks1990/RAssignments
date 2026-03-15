@@ -38,18 +38,18 @@ group_by(pclass, alive) |>
 
 # Create a bar chart for the first class passengers who embarked in Southampton grouped by sex
 png(file="titanicBar1.png")
-firstSouth |> ggplot(aes(x=pclass)) + 
+firstSouthp <- ggplot(aes(x=pclass)) + 
     geom_bar(aes(fill=sex), position="dodge") +
     scale_fill_manual(values=colors) + 
     labs(x="Class", y="Count", fill="Sex")
 
-  ggsave("titanicBar1.png", plot = , width = 6, height = 4, dpi = 300)
+  ggsave("titanicBar1.png", plot = firstSouthp, width = 6, height = 4, dpi = 300)
     
 # Create a bar chart for the second and third class passengers grouped by survival status
 png(file="titanicBar2.png")
-secondThird |> ggplot(aes(x=pclass)) + 
+secondThirdp <- ggplot(aes(x=pclass)) + 
     geom_bar(aes(fill=alive), position="dodge") +
     scale_fill_manual(values=colors) + 
     labs(x="Class", y="Count", fill="Alive")
 
-ggsave("titanicBar2.png", plot = p2, width = 6, height = 4, dpi = 300)
+ggsave("titanicBar2.png", plot = secondThirdp, width = 6, height = 4, dpi = 300)
