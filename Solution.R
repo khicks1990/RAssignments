@@ -29,23 +29,25 @@ linearModel <- linear_reg(mode = "regression", engine = "lm")
 
 # Fit a regression model in tidymodels
 linearModel_fit <- linearModel |>
-  fit(total_score ~ elo_i, data = NBATrainData)
+    fit(total_score ~ elo_i, data = NBATrainData)
     
 # Define a set of 10 cross-validation folds
 folds <- vfold_cv(NBATrainData, v = 10)
 
 # Define a workflow, or set of modeling steps
 NBA_workflow <- 
-  workflow() |>
-  add_model(linearModel) |>
-  add_formula(total_score ~ elo_i)
+    workflow() |>
+    add_model(linearModel) |>
+    add_formula(total_score ~ elo_i)
     
 # Fit the linear regression model to each cross-validation fold
 NBA_fit_cv <- 
-  NBA_workflow |>
-  fit_resamples(folds)
+  fit_resamples(
+    NBA_workflow,
+    resamples = folds,
+    metrics = metric_set(rmse, rsq)
+  )
 
-tenFoldScores <- NBA_fit_cv |>
-  collect_metrics()
+tenFoldScores <- collect_metrics(NBA_fit_cv)
 
 print(tenFoldScores)
