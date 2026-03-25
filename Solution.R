@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidyverse")
+packages <- c("tidymodels")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -9,19 +9,40 @@ for (pkg in packages) {
   }
 }
 
-# Load nbaallelo_log.csv into a dataframe
-NBA <- read.csv("nbaallelo_log.csv")
+suppressPackageStartupMessages(library(tidymodels))
 
-# Hot encode the game_result variable as a numeric variable with 0 for L and 1 for W
-NBA$game_result <- ifelse(NBA$game_result == "W", 1, 0) # Your code here
+set.seed(123)
+df <- read.csv("nbaallelo_slr.csv")
+NBA <- df[sample(nrow(df), size=50), ]
 
-# Fit the logistic model
-logisticModel <- glm(game_result ~ elo_i, family = "binomial", data = NBA) # Your code here
-summary(logisticModel)
+# Create a new column in the data frame that is the difference between pts and opp_pts
+NBA$y = NBA$pts - NBA$opp_pts
 
-# Predict the probability that an elo_i score of 1310 is a win / loss
-outcomeProb = predict(logisticModel,
-                      newdata = data.frame(elo_i = 1310),
-                      type = "response") # Your code here
+# Split the data into training and test sets
+split <- initial_split(NBA, prop = 0.7)
 
-print(paste0("A team with the given elo_i score has predicted probability ", format(round(outcomeProb, 3)), " of winning."))
+NBATestData <- testing(split)
+NBATrainData <- training(split)
+
+# Fit a linear regression model using tidymodels to the training data
+linearModel <- linear_reg(mode = "regression", engine = "lm")
+
+# Fit a regression model in tidymodels
+linearModel_fit <- linearModel |>
+    fit(y ~ elo_i, data = NBATrainData)
+    
+# Define a set of 10 cross-validation folds
+folds <- vfold_cv(NBATrainData, v = 10)
+
+# Define a workflow, or set of modeling steps
+NBA_workflow <- workflow() |> add_model(linearModel) |> add_formula(y ~ elo_i)
+    
+    
+# Fit the linear regression model to each cross-validation fold
+NBA_fit_cv <- fit_resamples(NBA_workflow, resamples = folds, metrics = metric_set(rmse, rsq))
+  
+
+tenFoldScores <- collect_metrics(NBA_fit_cv)
+
+print(tenFoldScores)
+#done
