@@ -13,13 +13,15 @@ for (pkg in packages) {
 NBA <- read.csv("nbaallelo_log.csv")
 
 # Hot encode the game_result variable as a numeric variable with 0 for L and 1 for W
-NBA$game_result <- ifelse(NBA$game_result == "W", 1, 0)
+NBA$game_result <- ifelse(NBA$game_result == "W", 1, 0) # Your code here
 
 # Fit the logistic model
-logisticModel <- glm(game_result ~ elo_i, family = "binomial", data = NBA)
+logisticModel <- glm(game_result ~ elo_i, family = "binomial", data = NBA) # Your code here
 summary(logisticModel)
 
-# Predict the probability that an elo_i score of 1310 is a win / loss.
-outcomeProb = predict(logisticModel, newdata = data.frame(elo_i = 1310), type="response")
+# Predict the probability that an elo_i score of 1310 is a win / loss
+outcomeProb = predict(logisticModel,
+                      newdata = data.frame(elo_i = 1310),
+                      type = "response") # Your code here
 
 print(paste0("A team with the given elo_i score has predicted probability ", format(round(outcomeProb, 3)), " of winning."))
