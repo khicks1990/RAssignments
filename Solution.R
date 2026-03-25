@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidymodels")
+packages <- c()
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -19,7 +19,7 @@ NBA <- df[sample(nrow(df), size=50), ]
 NBA$total_score <- NBA$pts + NBA$opp_pts
 
 # Split the data into training and test sets
-split <- initial_split(NBA, prop=0.7)
+split <- initial_split(NBA, prop = 0.7)
 
 NBATestData <- testing(split)
 NBATrainData <- training(split)
@@ -29,21 +29,23 @@ linearModel <- linear_reg(mode = "regression", engine = "lm")
 
 # Fit a regression model in tidymodels
 linearModel_fit <- linearModel |>
-    fit(total_score ~ elo_i, data = NBATrainData)
+  fit(total_score ~ elo_i, data = NBATrainData)
     
 # Define a set of 10 cross-validation folds
-folds <- vfold_cv(NBATrainData, v=10)
+folds <- vfold_cv(NBATrainData, v = 10)
 
 # Define a workflow, or set of modeling steps
-NBA_workflow <- workflow() |> add_model(linearModel) |> add_formula(total_score ~ elo_i)
-   
+NBA_workflow <- 
+  workflow() |>
+  add_model(linearModel) |>
+  add_formula(total_score ~ elo_i)
     
 # Fit the linear regression model to each cross-validation fold
-NBA_fit_cv <- fit_resamples(NBA_workflow, resamples=folds,metrics=metric_set(rmse, rsq))
+NBA_fit_cv <- 
+  NBA_workflow |>
+  fit_resamples(folds)
 
-
-tenFoldScores <- collect_metrics(NBA_fit_cv)
+tenFoldScores <- NBA_fit_cv |>
+  collect_metrics()
 
 print(tenFoldScores)
-
-#done
