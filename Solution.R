@@ -9,23 +9,17 @@ for (pkg in packages) {
   }
 }
 
-# Read in nbaallelo_slr.csv
-nba <- read.csv("nbaallelo_slr.csv")
+# Load nbaallelo_log.csv into a dataframe
+NBA <- read.csv("nbaallelo_log.csv")
 
-# Create a new column in the data frame that is the difference between pts and opp_pts
-nba$y <- nba$pts - nba$opp_pts
+# Hot encode the game_result variable as a numeric variable with 0 for L and 1 for W
+NBA$game_result <- ifelse(NBA$game_result == "W", 1, 0)
 
-# Fit a least squares regression model on y and elo_i
-SLRModel <- lm(y ~ elo_i, data = nba)
+# Fit the logistic model
+logisticModel <- glm(game_result ~ elo_i, family = "binomial", data = NBA)
+summary(logisticModel)
 
-# Print the intercept
-intercept <- coef(SLRModel)[1]
-print(paste0("The intercept of the linear regression line is ", format(round(intercept, 3)), "."))
+# Predict the probability that an elo_i score of 1310 is a win / loss.
+outcomeProb = predict(logisticModel, newdata = data.frame(elo_i = 1310), type="response")
 
-# Print the slope
-slope <- coef(SLRModel)[2]
-print(paste0("The slope of the linear regression line is ", format(round(slope, 3)), "."))
-
-# Compute the proportion of variation explained by the linear regression
-rSquare <- summary(SLRModel)$r.squared
-print(paste0("The proportion of variation explained by the linear regression model is ", format(round(rSquare, 3)), "."))
+print(paste0("A team with the given elo_i score has predicted probability ", format(round(outcomeProb, 3)), " of winning."))
