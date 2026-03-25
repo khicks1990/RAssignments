@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidymodels")
+packages <- c()
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -35,14 +35,17 @@ linearModel_fit <- linearModel |>
 folds <- vfold_cv(NBATrainData, v = 10)
 
 # Define a workflow, or set of modeling steps
-NBA_workflow <- workflow() |> add_model(linearModel) |> add_formula(y ~ elo_i)
-    
+NBA_workflow <- 
+    workflow() |>
+    add_model(linearModel) |>
+    add_formula(y ~ elo_i)
     
 # Fit the linear regression model to each cross-validation fold
-NBA_fit_cv <- fit_resamples(NBA_workflow, resamples = folds, metrics = metric_set(rmse, rsq))
-  
+NBA_fit_cv <- 
+  NBA_workflow |>
+  fit_resamples(folds)
 
-tenFoldScores <- collect_metrics(NBA_fit_cv)
+tenFoldScores <- NBA_fit_cv |>
+  collect_metrics()
 
 print(tenFoldScores)
-#done
