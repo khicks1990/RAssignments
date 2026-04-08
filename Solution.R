@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("kknn")
+packages <- c()
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -29,32 +29,26 @@ train_data <- training(data_split)
 test_data <- testing(data_split)
 
 # Define kNN classification model with k=5
-skySurveyKNNClass <- 
-  nearest_neighbor(neighbors = 5) |>
+skySurveyKNNClass <- nearest_neighbor(neighbors = 5) |>
   set_engine("kknn") |>
-  set_mode("classification")
+  set_mode("classification") # Your code here
 
 # Define recipe to normalize data and select features
-skySurveyRecipe <- 
-  recipe(class ~ g_r + r_i, data = train_data) |>
-  step_normalize(all_predictors())
+skySurveyRecipe <- recipe(class ~ g_r + r_i, data = train_data) |> 
+  step_normalize(all_predicators()) # Your code here
 
 # Assemble workflow
-skySurveyClassWflow <- 
-  workflow() |>
-  add_model(skySurveyKNNClass) |>
-  add_recipe(skySurveyRecipe)
+skySurveyClassWflow <- workflow() |>
+  add_recipe(skySurveyRecipe) |>
+  add_model(skySurveyKNNClass) # Your code here
 
 # Fit model
-skySurveyClassFit <- 
-    fit(skySurveyClassWflow, data = train_data)
+skySurveyClassFit <- fit(skySurveyClassWflow, data = train_data) # Your code here
 
 # Predict values for the test set and add those values onto the test set
-testPred <- 
-  predict(skySurveyClassFit, test_data) |>
-  bind_cols(test_data)
+testPred <- augment(skySurveyClassWflow, data = train_data) # Your code here
 
 # Print accuracy and confusion matrix
 testPred |> accuracy(class, .pred_class)
 confusionMatrix <- testPred |> conf_mat(class, .pred_class) 
-print(confusionMatrix
+print(confusionMatrix)
