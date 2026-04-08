@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c()
+packages <- c("tidyverse", "tidymodels", "kknn")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -9,45 +9,40 @@ for (pkg in packages) {
   }
 }
 
+# Load packages
 suppressPackageStartupMessages(library(tidymodels))
+suppressPackageStartupMessages(library(tidyverse))
 
-set.seed(123)
-df <- read.csv("nbaallelo_slr.csv")
-NBA <- df[sample(nrow(df), size=50), ]
+# Load the dataset
+skySurveyRaw <- read.csv('SDSS.csv')
+skySurvey <- skySurveyRaw |> mutate(class = as_factor(str_to_title(class)))
 
-# Create a new column in the data frame that is the SUM of pts and opp_pts
-NBA$total_score <- NBA$pts + NBA$opp_pts
+# Create a new feature from u - g
+skySurvey$u_g <- skySurvey$u - skySurvey$g
 
-# Split the data into training and test sets
-split <- initial_split(NBA, prop = 0.7)
+set.seed(42)
 
-NBATestData <- testing(split)
-NBATrainData <- training(split)
+# Split data into training and test sets
+data_split <- initial_split(skySurvey, prop = 0.7, strata = class)
+train_data <- training(data_split)
+test_data <- testing(data_split)
 
-# Fit a linear regression model using tidymodels to the training data
-linearModel <- linear_reg(mode = "regression", engine = "lm")
+# Define model with k=3
+skySurveyKNNClass <- nearest_neighbor(neighbors=3) %>% set_mode("classification") %>% set_engine("kknn")
 
-# Fit a regression model in tidymodels
-linearModel_fit <- linearModel |>
-    fit(total_score ~ elo_i, data = NBATrainData)
-    
-# Define a set of 10 cross-validation folds
-folds <- vfold_cv(NBATrainData, v = 10)
+# Define recipe to normalize data
+skySurveyRecipe <- recipe(class ~ redshift + u_g, data = train_data) %>% step_normalize(all_predictors())
 
-# Define a workflow, or set of modeling steps
-NBA_workflow <- 
-    workflow() |>
-    add_model(linearModel) |>
-    add_formula(total_score ~ elo_i)
-    
-# Fit the linear regression model to each cross-validation fold
-NBA_fit_cv <- 
-  fit_resamples(
-    NBA_workflow,
-    resamples = folds,
-    metrics = metric_set(rmse, rsq)
-  )
+# Assemble workflow
+skySurveyClassWflow <- workflow() %>% add_model(skySurveyKNNClass) %>% add_recipe(skySurveyRecipe)
 
-tenFoldScores <- collect_metrics(NBA_fit_cv)
+# Fit model
+skySurveyClassFit <- fit(skySurveyClassWflow, data = train_data)
 
-print(tenFoldScores)
+# Predict values for the test set and add those values onto to the test set.
+testPred <- predict(skySurveyClassFit, test_data) %>% bind_cols(test_data)
+
+# Print accuracy and confusion matrix
+testPred |> accuracy(truth= class,  estimate = .pred_class)
+confusionMatrix <- testPred |> conf_mat(truth = class, estimate = .pred_class) 
+print(confusionMatrix)
