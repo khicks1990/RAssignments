@@ -35,7 +35,7 @@ skySurveyKNNClass <- nearest_neighbor(neighbors = 5) |>
 
 # Define recipe to normalize data and select features
 skySurveyRecipe <- recipe(class ~ g_r + r_i, data = train_data) |>
-  step_normalize(all_predicators()) # Your code here
+  step_normalize(all_predictors()) # Your code here
 
 # Assemble workflow
 skySurveyClassWflow <- workflow() |>
@@ -43,10 +43,12 @@ skySurveyClassWflow <- workflow() |>
   add_model(skySurveyKNNClass) # Your code here
 
 # Fit model
-skySurveyClassFit <- fit(skySurveyClassWflow, data = train_data) # Your code here
+# Fit model
+skySurveyClassFit <- skySurveyClassWflow |>
+  fit(data = train_data)# Your code here
 
-# Predict values for the test set and add those values onto the test set
-testPred <- augment(skySurveyClassWflow, data = train_data) # Your code here
+testPred <- predict(skySurveyClassFit, test_data) |>
+  bind_cols(test_data)# Your code here
 
 # Print accuracy and confusion matrix
 testPred |> accuracy(class, .pred_class)
