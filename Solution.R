@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c()
+packages <- c("kknn")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -17,8 +17,9 @@ suppressPackageStartupMessages(library(tidyverse))
 skySurveyRaw <- read.csv('SDSS.csv')
 skySurvey <- skySurveyRaw |> mutate(class = as_factor(str_to_title(class)))
 
-# Create a new feature from u - g
-skySurvey$u_g <- skySurvey$u - skySurvey$g
+# Create new features
+skySurvey$g_r <- skySurvey$g - skySurvey$r
+skySurvey$r_i <- skySurvey$r - skySurvey$i
 
 set.seed(42)
 
@@ -27,27 +28,33 @@ data_split <- initial_split(skySurvey, prop = 0.7, strata = class)
 train_data <- training(data_split)
 test_data <- testing(data_split)
 
-# Define model with k=3
-skySurveyKNNClass <- nearest_neighbor(mode = "classification", neighbors = 3) |>
-  set_engine("kknn")
+# Define kNN classification model with k=5
+skySurveyKNNClass <- 
+  nearest_neighbor(neighbors = 5) |>
+  set_engine("kknn") |>
+  set_mode("classification")
 
-# Define recipe to normalize data
-skySurveyRecipe <- recipe(class ~ redshift + u_g,
-                          data = train_data) |>
-  step_normalize(all_numeric_predictors())
+# Define recipe to normalize data and select features
+skySurveyRecipe <- 
+  recipe(class ~ g_r + r_i, data = train_data) |>
+  step_normalize(all_predictors())
 
 # Assemble workflow
-skySurveyClassWflow <- workflow() |>
-  add_recipe(skySurveyRecipe) |>
-  add_model(skySurveyKNNClass)
+skySurveyClassWflow <- 
+  workflow() |>
+  add_model(skySurveyKNNClass) |>
+  add_recipe(skySurveyRecipe)
 
 # Fit model
-skySurveyClassFit <- fit(skySurveyClassWflow, train_data)
+skySurveyClassFit <- 
+    fit(skySurveyClassWflow, data = train_data)
 
-# Predict values for the test set and add those values onto to the test set.
-testPred <- augment(skySurveyClassFit, test_data)
+# Predict values for the test set and add those values onto the test set
+testPred <- 
+  predict(skySurveyClassFit, test_data) |>
+  bind_cols(test_data)
 
 # Print accuracy and confusion matrix
 testPred |> accuracy(class, .pred_class)
 confusionMatrix <- testPred |> conf_mat(class, .pred_class) 
-print(confusionMatrix)
+print(confusionMatrix
