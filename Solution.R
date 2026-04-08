@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c()
+packages <- c("kknn", "tidymodels", "tidyverse")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -34,7 +34,7 @@ skySurveyKNNClass <- nearest_neighbor(neighbors = 5) |>
   set_mode("classification") # Your code here
 
 # Define recipe to normalize data and select features
-skySurveyRecipe <- recipe(class ~ g_r + r_i, data = train_data) |> 
+skySurveyRecipe <- recipe(class ~ g_r + r_i, data = train_data) |>
   step_normalize(all_predicators()) # Your code here
 
 # Assemble workflow
