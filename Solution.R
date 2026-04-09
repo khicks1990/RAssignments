@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c()
+packages <- c("tidyverse")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -12,22 +12,22 @@ for (pkg in packages) {
 suppressPackageStartupMessages(library(tidyverse))
 
 # Read in forestfires.csv
-fires <-  read.csv("forestfires.csv")
+fires <- read.csv("forestfires.csv") # Your code here
 
 # Create a new data frame with the columns FFMC, DMC, DC, ISI, temp, RH, wind, and rain, in that order
-X <- fires %>% select(FFMC, DMC, DC, ISI, temp, RH, wind, rain)
+X <- fires |> select(FFMC, DMC, DC, ISI, temp, RH, wind, rain) # Your code here
 
 # Calculate the correlation matrix for the data in the data frame X
-XCorr <- round(cor(X), 2)
+XCorr <- round(as.data.frame(cor(X)), 2) # Your code here
 XCorr
 
 # Perform four-component factor analysis on the scaled data.
-FA_model <- princomp(X, cor = TRUE, scores = TRUE)
+pcaModel <- princomp(X, cor = TRUE) # Your code here
 
 # Print the factors and the explained variance.
-eigenvectors <- # Your code here
+eigenvectors <- loadings(pcaModel)[, 1:4] # Your code here
 eigenvectors
 
-eigenvalues <- # Your code here
+eigenvalues <- pcaModel$sdev[1:4]^2 # Your code here
 print("Explained variance: ")
 eigenvalues
