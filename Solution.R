@@ -11,56 +11,23 @@ for (pkg in packages) {
 
 suppressPackageStartupMessages(library(tidyverse))
 
-theme_set(theme_gray(base_size=18))
+# Read in forestfires.csv
+fires <-  read.csv("forestfires.csv")
 
-colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728", 
-"#9467bd","#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")
+# Create a new data frame with the columns FFMC, DMC, DC, ISI, temp, RH, wind, and rain, in that order
+X <- fires %>% select(FFMC, DMC, DC, ISI, temp, RH, wind, rain)
 
-set.seed(42)
+# Calculate the correlation matrix for the data in the data frame X
+XCorr <- round(cor(X), 2)
+XCorr
 
-# Load the dataset
-mammalSleepRaw <- read.csv('msleep.csv')
+# Perform four-component factor analysis on the scaled data.
+FA_model <- princomp(X, cor = TRUE, scores = TRUE)
 
-# Create a dataframe with the columns sleep_total and sleep_rem
-mammalSleep <- mammalSleepRaw |>
-  select(sleep_total, sleep_rem)
+# Print the factors and the explained variance.
+eigenvectors <- # Your code here
+eigenvectors
 
-# Clean the data
-mammalSleep <- drop_na(mammalSleep)
-
-# Fit a k-means model with k=4
-kmModel <- kmeans(mammalSleep, centers = 4)
-kmModel
-
-# Find the centroids of the clusters
-mammalSleepCentroids <- kmModel$centers
-mammalSleepCentroids
-
-mammalSleep$cluster <- as.factor(kmModel$cluster)
-
-# Plot the clusters and centroids
-png(file="msleep_clusters.png")
-mammalSleep |> 
-  ggplot(aes(x = sleep_total, y = sleep_rem, color = cluster)) +
-  geom_point(size = 3) +
-  geom_point(
-    data = as.data.frame(mammalSleepCentroids),
-    aes(x = sleep_total, y = sleep_rem),
-    inherit.aes = FALSE,
-    color = "black",
-    size = 5,
-    shape = 8
-  ) +
-  geom_text(
-    data = as.data.frame(mammalSleepCentroids),
-    aes(x = sleep_total, y = sleep_rem, label = rownames(mammalSleepCentroids)),
-    inherit.aes = FALSE,
-    vjust = -1
-  ) +
-  labs(x='Sleep total', y='Sleep REM') +
-  theme(legend.position="none") +
-  scale_color_manual(values = colors)
-
-# Fit k-means clustering with k=1,...,5 and save WCSS for each
-WCSS <- sapply(1:5, function(k) kmeans(mammalSleep,k)$tot.withinss)
-WCSS
+eigenvalues <- # Your code here
+print("Explained variance: ")
+eigenvalues
