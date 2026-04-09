@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidyverse", "ggplot2", "dplyr", "tidymodels")
+packages <- c()
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -22,33 +22,30 @@ set.seed(42)
 mammalSleepRaw <- read.csv('msleep.csv')
 
 # Create a dataframe with the columns sleep_total and sleep_rem
-mammalSleep <- mammalSleepRaw %>% select(sleep_total, sleep_rem)
+mammalSleep <- mammalSleep <- mammalSleepRaw %>% select(sleep_total, sleep_rem)
 
 # Clean the data
 mammalSleep <- drop_na(mammalSleep)
 
 # Fit a k-means model with k=4
-kmModel <- kmeans(mammalSleep, centers=4, nstart=25)
+kmModel <- kmeans(mammalSleep, centers = 4)
 kmModel
 
 # Find the centroids of the clusters
-mammalSleepCentroids <- kmModel$centers
-print(mammalSleepCentroids)
+mammalSleepCentroids <- as.data.frame(kmModel$centers)
+mammalSleepCentroids
 
 mammalSleep$cluster <- as.factor(kmModel$cluster)
 
 # Plot the clusters and centroids
 png(file="msleep_clusters.png")
 mammalSleep |> 
-  ggplot(aes(x=sleep_total, y=sleep_rem, color=cluster))+
-  geom_point(size=3)+
-  geom_point(data = as.data.frame(mammalSleepCentroids), aes(x=sleep_total, y=sleep_rem),color="black", size=5,shape=8)+
-  labs(x='Sleep total', y='Sleep REM', title="K-means Clustering of Mammal Sleep") +
+  ggplot(mammalSleep, aes(x = sleep_total, y = sleep_rem, color = cluster)) + geom_point() + 
+geom_point(data = mammalSleepCentroids, aes(x = sleep_total, y = sleep_rem), color = "black", shape = 18, size = 5) 
+  labs(x='Sleep total', y='Sleep REM') +
   theme(legend.position="none") +
   scale_color_manual(values = colors)
-  dev.off()
 
 # Fit k-means clustering with k=1,...,5 and save WCSS for each
-WCSS <- sapply(1:5, function(k){
-  kmeans(mammalSleep[,1:2], centers=k, nstart=25)$tot.withinss})
-print(WCSS)
+WCSS <- sapply(1:5, function(k) kmeans(mammalSleep,k)$tot.withinss)
+WCSS
