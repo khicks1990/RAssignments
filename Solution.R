@@ -1,7 +1,6 @@
-# add needed packages here separated by commas
-packages <- c()
+# Add tidymodels to ensure it installs in your environment
+packages <- c("tidymodels", "readr", "rpart")
 
-# Install packages if not already installed
 for (pkg in packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     cat("Installing package:", pkg, "\n")
@@ -9,30 +8,29 @@ for (pkg in packages) {
   }
 }
 
-suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(tidymodels))
 
-# Read in forestfires.csv
-fires <- read.csv("forestfires.csv")
+# 1. Load the mpg dataset
+# use show_col_types = FALSE to keep the console clean
+mpg <- read_csv("mpg.csv", show_col_types = FALSE)
 
-# Create a new data frame with the columns FFMC, DMC, DC, ISI, temp, RH, wind, and rain, in that order
-X <- fires |> select(FFMC, DMC, DC, ISI, temp, RH, wind, rain)
+# 2. Subset the data containing mpg, weight, and model_year
+# We select by name to ignore that extra "...1" column
+mpgRegression <- mpg %>% 
+  select(mpg, weight, model_year)
 
-# Calculate the correlation matrix for the data in the data frame X
-XCorr <- as.data.frame(round(cor(X, use = "complete.obs"), 2))
-print("Correlation matrix: ")
-print(XCorr)
+# 3. Initialize a regression tree (Depth 3, Min Leaf Size 5)
+set.seed(14092022)
+mpgRT <- decision_tree(
+  tree_depth = 3,
+  min_n = 5
+) %>% 
+  set_engine("rpart") %>% 
+  set_mode("regression")
 
-# Perform four-component factor analysis on the scaled data.
-pcaModel <- princomp(X, cor = TRUE)
-print("PCA summary: ")
-print(pcaModel)
-
-# Print the factors and the explained variance.
-eigenvectors <- pcaModel$loadings[,1:4]
-print("Eigenvectors: ")
-print(eigenvectors)
-
-eigenvalues <- (pcaModel$sdev)^2
-
-print("Explained variance: ")
-print(eigenvalues[1:4])
+# 4. Fit the model
+fitTree <- mpgRT %>% 
+  fit(mpg ~ weight + model_year, data = mpgRegression)
+  
+# 5. Print regression tree
+print(fitTree)
