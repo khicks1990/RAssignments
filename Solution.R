@@ -43,5 +43,5 @@ heartConf <- caret::confusionMatrix(
   data=heart$pred_class,
   reference=heart$target
 )
-heartConf
+print(heartConf)
 #done
