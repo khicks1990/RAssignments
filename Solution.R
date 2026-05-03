@@ -27,8 +27,8 @@ if (is.na(depth)) {
 set.seed(42)
 
 # Initialize the model with user-defined depth
-bag_model <- bag_tree(tree_depth = depth, var_imp = TRUE) %>%
-  set_engine("rpart") %>%
+bag_model <- bag_tree() %>%
+  set_engine("rpart", control = rpart.control(maxdepth = depth)) %>%
   set_mode("regression")
 
 # Fit the model
