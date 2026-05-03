@@ -36,7 +36,7 @@ testData <- testing(NBAScaledSplit)
 classifyNBA <- neuralnet(game_result ~ pts + elo_i + win_equiv,
   data = trainData,
   hidden = 0,
-  leanringrate = 0.05,
+  learningrate = 0.05,
   stepmax = 20000,
   linear.output = FALSE,
   algorithm ="backprop")
