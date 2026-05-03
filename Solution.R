@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidymodels", "tidyverse")
+packages <- c("tidyverse")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -9,47 +9,68 @@ for (pkg in packages) {
   }
 }
 
-# Load packages
-suppressPackageStartupMessages(library(tidymodels))
 suppressPackageStartupMessages(library(tidyverse))
 
-# Load the dataset
-skySurveyRaw <- read.csv('SDSS.csv')
-skySurvey <- skySurveyRaw |> mutate(class = as_factor(str_to_title(class)))
+theme_set(theme_gray(base_size = 18))
 
-# Create new features
-skySurvey$g_r <- skySurvey$g - skySurvey$r
-skySurvey$r_i <- skySurvey$r - skySurvey$i
+colors <- c("#1f77b4","#ff7f0e", "#2ca02c", "#d62728", 
+"#9467bd","#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")
 
 set.seed(42)
 
-# Split data into training and test sets
-data_split <- initial_split(skySurvey, prop = 0.7, strata = class)
-train_data <- training(data_split)
-test_data <- testing(data_split)
+# Load the dataset
+mammalSleepRaw <- read.csv('msleep.csv')
 
-# Define kNN classification model with k=5
-skySurveyKNNClass <- nearest_neighbor(neighbors = 5) |>
-  set_engine("kknn") |>
-  set_mode("classification") # Your code here
+# Create a dataframe with the columns sleep_total and sleep_rem
+mammalSleep <- mammalSleepRaw |>
+  select(sleep_total, sleep_rem)
 
-# Define recipe to normalize data and select features
-skySurveyRecipe <- recipe(class ~ g_r + r_i, data = train_data) |> 
-  step_normalize(all_predictors()) # Your code here
+# Clean the data
+mammalSleep <- drop_na(mammalSleep)
 
-# Assemble workflow
-skySurveyClassWflow <- workflow() |>
-  add_recipe(skySurveyRecipe) |>
-  add_model(skySurveyKNNClass) # Your code here
+mammalSleep_numeric <- mammalSleep
 
-# Fit model
-skySurveyClassFit <- fit(skySurveyClassWflow, data = train_data)# Your code here
+# Fit a k-means model with k=4
+kmModel <- kmeans(mammalSleep_numeric, centers = 4)
 
-# Predict values for the test set and add those values onto the test set
-testPred <- augment(skySurveyClassFit, new_data = test_data)# Your code here
+print(kmModel)
 
-# Print accuracy and confusion matrix
-testPred |> accuracy(truth = class, estimate = .pred_class) |> print()
+# Find the centroids of the clusters
+mammalSleepCentroids <- kmModel$centers
 
-confusionMatrix <- testPred |> conf_mat(truth = class, estimate = .pred_class)
-confusionMatrix |> print()
+print(mammalSleepCentroids)
+
+mammalSleep$cluster <- as.factor(kmModel$cluster)
+
+# Plot the clusters and centroids
+png(file = "msleep_clusters.png")
+
+plot <- mammalSleep |>
+  ggplot(aes(x = sleep_total, y = sleep_rem, color = cluster)) +
+  geom_point(size = 3) +
+  geom_point(
+    data = as.data.frame(mammalSleepCentroids),
+    aes(x = sleep_total, y = sleep_rem),
+    inherit.aes = FALSE,
+    color = "black",
+    size = 5,
+    shape = 8
+  ) +
+  geom_text(
+    data = as.data.frame(mammalSleepCentroids),
+    aes(x = sleep_total, y = sleep_rem, label = rownames(mammalSleepCentroids)),
+    inherit.aes = FALSE,
+    vjust = -1
+  ) +
+  labs(x = 'Sleep total', y = 'Sleep REM') +
+  theme(legend.position = "none") +
+  scale_color_manual(values = colors)
+
+print(plot)
+
+dev.off()
+
+# Fit k-means clustering with k=1,...,5 and save WCSS for each
+WCSS <- sapply(1:5, function(k) kmeans(mammalSleep_numeric, centers = k)$tot.withinss)
+
+print(WCSS)
