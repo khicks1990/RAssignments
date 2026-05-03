@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("rsample", "neuralnet", "tidymodels")
+packages <- c()
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -32,25 +32,27 @@ NBAScaledSplit <- initial_split(NBAScaled, prop = 0.70)
 trainData <- training(NBAScaledSplit)
 testData <- testing(NBAScaledSplit)
 
-# Fit a multilayer perceptron
-classifyNBA_MLP <- neuralnet(
-  game_result ~ pts + elo_i + win_equiv,
-  data = trainData,
-  hidden = 3,
-  learningrate = 0.03,
-  stepmax = 15000,
-  linear.output = FALSE,
-  algorithm = "backprop"
-)
+# Fit a multilayer perceptron with one hidden layer of 3 neurons,
+# learning rate 0.03, and 15000 epochs
+classifyNBA_MLP <- neuralnet(game_result ~ pts + elo_i + win_equiv,
+                             data = trainData,
+                             hidden = 3,
+                             learningrate = 0.03,
+                             stepmax = 15000,
+                             linear.output = FALSE,
+                             algorithm = "backprop",
+                             lifesign = "minimal")
 
 # Create predictions on the test set
-yPred <- neuralnet::compute(classifyNBA_MLP, testData[, c("pts", "elo_i", "win_equiv")])
-testData$yPred <- as.factor(as.numeric(yPred$net.result >= 0.5))
+yPred <- predict(classifyNBA_MLP, newdata = testData)
+testData$yPred <- ifelse(yPred[, 1] >= 0.5, 1, 0)
 
 # Extract and print the network weights
 weightVar <- classifyNBA_MLP$weights
+print("Network Weights: ")
 print(weightVar)
 
-# Compute accuracy score
-score <- mean(testData$yPred == as.factor(testData$game_result))
+# Accuracy
+score <- mean(testData$yPred == testData$game_result)
+print("Accuracy Score: ")
 print(score)
