@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c()
+packages <- c("randomForest")
 
 # Install packages if not already installed
 for (pkg in packages) {
