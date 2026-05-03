@@ -33,24 +33,23 @@ trainData <- training(NBAScaledSplit)
 testData <- testing(NBAScaledSplit)
 
 # Fit a perceptron model with a learning rate of 0.05 and 20000 epochs
-classifyNBA <- neuralnet(
-  game_result ~ pts + elo_i + win_equiv,
+classifyNBA <- neuralnet(game_result ~ pts + elo_i + win_equiv,
   data = trainData,
   hidden = 0,
-  learningrate = 0.05,
+  leanringrate = 0.05,
   stepmax = 20000,
   linear.output = FALSE,
-  algorithm = "backprop"
-)
+  algorithm ="backprop")
 
 # Create a list of predictions from the test features
-yPred <- predict(classifyNBA, newdata = testData) 
+yPred <- compute(classifyNBA, testData[, c("pts", "elo_i", "win_equiv")])$net.result
+
 testData$yPred <- as.factor(as.numeric(yPred[, 1] >= 0.5))
 
 # Find the weights for the input variables
 weightVar <- classifyNBA$weights
-weightVar
+print(weightVar)
 
 # Find the accuracy score
-score <- accuracy_vec(truth = as.factor(testData$game_result), estimate = testData$yPred)
-score
+score <- accuracy(testData, truth = as.factor(game_result), estimate = yPred)
+print(score)
