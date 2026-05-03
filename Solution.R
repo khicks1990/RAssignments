@@ -14,10 +14,8 @@ library(vip)
 
 # Load the mpg dataset
 # Make sure mpg.csv is in your /workspaces/... folder
-mpg <- read.csv("mpg.csv")
-
-# Create a binary outcome variable for high mpg
-mpg <- mpg %>%
+mpg <- read.csv("mpg.csv") %>%
+  select(-1) %>%
   mutate(high_mpg = factor(ifelse(mpg >= 25, "yes", "no")))
 
 # Subset the data for classification
