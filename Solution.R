@@ -40,4 +40,4 @@ mpgRF <- rand_forest(mode = "classification", mtry = 2, trees = 300) |>
 fitRF <- mpgRF |> fit(high_mpg ~ ., data = mpgClassification)
 
 # Display variable importance
-fitRF |> extract_fit_parsnip() |> vi()
+print(fitRF$fit$importance)
