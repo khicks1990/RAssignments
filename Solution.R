@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidymodels", "neuralnet", "rsample")
+packages <- c()
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -24,9 +24,7 @@ NBA$game_result <- ifelse(NBA$game_result == "L", 0, 1)
 
 # Create a duplicate of NBA called NBAScaled and scale the features
 NBAScaled <- NBA
-NBAScaled[, c("pts", "elo_i", "win_equiv")] <- scale(
-  NBA[, c("pts", "elo_i", "win_equiv")] 
-)
+NBAScaled[, c("pts", "elo_i", "win_equiv")] <- scale(NBAScaled[, c("pts", "elo_i", "win_equiv")])
 
 # Split the data into train and test sets
 NBAScaledSplit <- initial_split(NBAScaled, prop = 0.70)
@@ -38,15 +36,16 @@ testData <- testing(NBAScaledSplit)
 # learning rate 0.03, and 15000 epochs
 classifyNBA_MLP <- neuralnet(
   game_result ~ pts + elo_i + win_equiv,
-  data=trainData,
-  learningrate=0.03,
-  stepmax=1e6,
-  linear.output=FALSE,
-  algorithm="backprop"
+  data = trainData,
+  hidden = 3,
+  linear.output = FALSE,
+  learningrate = 0.03,
+  stepmax = 1e6,
+  algorithm = "backprop"
 )
 
 # Create predictions on the test set
-yPred <- predict(classifyNBA_MLP, newdata = testData)
+yPred <- # Your code here
 testData$yPred <- as.factor(as.numeric(yPred[, 1] >= 0.5))
 
 # Extract and print the network weights
