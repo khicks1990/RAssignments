@@ -40,7 +40,7 @@ classifyNBA_MLP <- neuralnet(
   game_result ~ pts + elo_i + win_equiv,
   data=trainData,
   learningrate=0.03,
-  stepmax=15000,
+  stepmax=1e6,
   linear.output=FALSE,
   algorithm="backprop"
 )
@@ -51,8 +51,8 @@ testData$yPred <- as.factor(as.numeric(yPred[, 1] >= 0.5))
 
 # Extract and print the network weights
 weightVar <- classifyNBA_MLP$weights
-weightVar
+print(weightVar)
 
 # Compute the accuracy score
 score <- mean(testData$yPred == testData$game_result)
-score
+print(score)
