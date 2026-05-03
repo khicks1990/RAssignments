@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidyverse", "tidymodels", "caret", "xgboost")
+packages <- c("tidymodels", "baguette", "rpart")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -10,36 +10,37 @@ for (pkg in packages) {
 }
 
 # Import the necessary packages
-suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(tidymodels))
-suppressPackageStartupMessages(library(caret))
+suppressPackageStartupMessages(library(baguette))
+suppressPackageStartupMessages(library(rpart))
 
 heart <- read.csv("heart.csv")
-heart$target <- as.factor(heart$target)
 
-# Initialize the model with XGBoost and 50 trees
-heartBoost <- boost_tree(trees = 50) %>%
-  set_engine("xgboost") %>%
-  set_mode("classification")# Your code here
+# Read in the tree depth
+inputs <- readLines(con = "stdin", n = 1, warn=FALSE)
+depth <- as.integer(inputs)
+
+if (is.na(depth)) {
+  depth <- 3
+}
+
+set.seed(42)
+
+# Initialize the model with user-defined depth
+bag_model <- bag_tree() %>%
+  set_engine("rpart", control = rpart.control(maxdepth = depth)) %>%
+  set_mode("regression")
 
 # Fit the model
-heartFit <- heartBoost %>%
-  fit(
-    target ~ age + cp + trestbps + chol + fbs + restecg + thalach + exang + oldpeak,
-    data = heart
-  )# Your code here
+bag_fit <- fit(
+  bag_model,
+  chol ~ age + cp + trestbps + fbs + restecg + thalach + exang + oldpeak,
+  data = heart)
 
-# Add predictions and class probabilities to heart dataset
-heartPred <- predict(heartFit, new_data = heart) 
+# Add predictions to heart dataset
+heart$predicted_chol <- predict(bag_fit, heart)$.pred
 
-heartProb <- predict(heartFit, new_data = heart, type = "prob")
+# Calculate regression metrics
+results <- yardstick::metrics(heart, truth=chol, estimate = predicted_chol)
 
-heart <- bind_cols(heart, heartPred, heartProb) # Your code here
-
-# Confusion matrix using the caret package
-heartConf <- confusionMatrix(
-  data = heart$.pred_class,
-  reference = heart$target
-) # Your code here
-
-print(heartConf)
+results
