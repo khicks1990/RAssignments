@@ -28,7 +28,7 @@ set.seed(42)
 
 # Initialize the model with user-defined depth
 bag_model <- bag_tree() %>%
-  set_engine("rpart", control = rpart.control(maxdepth = depth)) %>%
+  set_engine("rpart", times = 25, control = rpart.control(maxdepth = depth), var_imp = TRUE) %>%
   set_mode("regression")
 
 # Fit the model
@@ -43,4 +43,4 @@ heart$predicted_chol <- predict(bag_fit, heart)$.pred
 # Calculate regression metrics
 results <- yardstick::metrics(heart, truth=chol, estimate = predicted_chol)
 
-results
+print(results)
