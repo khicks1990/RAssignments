@@ -46,11 +46,8 @@ classifyNBA_MLP <- neuralnet(
 )
 
 # Create predictions on the test set
-yPred <- neuralnet::compute(
-  classifyNBA_MLP,
-  testData[, c("pts", "elo_i", "win_equiv")]
-)
-testData$yPred <- as.factor(as.numeric(yPred$net.result >= 0.5))
+yPred <- predict(classifyNBA_MLP, newdata = testData)
+testData$yPred <- as.factor(as.numeric(yPred[, 1] >= 0.5))
 
 # Extract and print the network weights
 weightVar <- classifyNBA_MLP$weights
