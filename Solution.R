@@ -48,6 +48,8 @@ mpgRF <- rand_forest(mtry = 2, trees = 300) %>%
 fitRF <- mpgRF %>%
   fit(high_mpg ~ ., data = mpgClassification)
 
-# Display variable importance
-# Display variable importance
-vip(extract_fit_engine(fitRF)$fit)
+rf_fit <- extract_fit_engine(fitRF)$fit
+importance_scores <- rf_fit$variable.importance
+importance_scores <- sort(importance_scores, decreasing = TRUE)
+
+print(importance_scores)
