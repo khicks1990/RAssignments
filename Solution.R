@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("rpart", "ranger", "vip")
+packages <- c("tidymodels", "neuralnet", "rsample")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -9,44 +9,47 @@ for (pkg in packages) {
   }
 }
 
+# Load packages
+suppressPackageStartupMessages(library(rsample))
+suppressPackageStartupMessages(library(neuralnet))
 suppressPackageStartupMessages(library(tidymodels))
-library(vip) 
 
-# Load the mpg dataset
-# Make sure mpg.csv is in your /workspaces/... folder
-mpg <- read.csv("mpg.csv")
+# Load input into a dataframe
+set.seed(42)
+df <- read.csv("nbaallelo_log.csv")
+NBA <- df[sample(nrow(df), size=1000), ]
 
-# Create a binary outcome variable for high mpg
-mpg <- mpg %>%
-  mutate(high_mpg = factor(ifelse(mpg >= 25, "yes", "no")))
+# Hot encode the game_result variable as a numeric variable with 0 for L and 1 for W
+NBA$game_result <- ifelse(NBA$game_result == "L",0,1)
 
-# Subset the data for classification
-mpgClassification <- mpg %>%
-  select(weight, horsepower, model_year, high_mpg)
+# Create a duplicate of NBA called NBAScaled and then scale the features
+NBAScaled <- NBA
+NBAScaled[, c("pts", "elo_i", "win_equiv")] <- scale(NBA[, c("pts", "elo_i", "win_equiv")])
 
-# Initialize a classification tree with max depth 4 and minimum 10 samples per leaf
-set.seed(14092022)
-mpgCT <- decision_tree(tree_depth = 4, min_n = 10) %>%
-  set_engine("rpart") %>%
-  set_mode("classification")
+# Split the data into train and test sets
+NBAScaledSplit <- initial_split(NBAScaled, prop = 0.70)
 
-# Fit the classification tree
-fitClassTree <- mpgCT %>%
-  fit(high_mpg ~ ., data = mpgClassification)
+trainData <- training(NBAScaledSplit)
+testData <- testing(NBAScaledSplit)
 
-# Print classification tree
-print(fitClassTree)
+# Fit a perceptron model with a learning rate of 0.05 and 20000 epochs
+classifyNBA <- neuralnet(
+  game_result ~ pts + elo_i + win_equiv,
+  data = trainData,
+  learningrate = 0.05,
+  stepmax = 20000,
+  linear.output = FALSE,
+  algorithm = "backprop"
+)
 
+# Create a list of predictions from the test features
+yPred <- neuralnet::compute(classifyNBA, testData[, c("pts", "elo_i", "win_equiv")])
+testData$yPred <- as.factor(as.numeric(yPred$net.result >= 0.5))
 
-# Initialize a random forest classifier with 300 trees and 2 variables tried at each split
-set.seed(14092022)
-mpgRF <- rand_forest(mtry = 2, trees = 300) %>%
-  set_engine("ranger", importance = "impurity") %>%
-  set_mode("classification")
+# Find the weights for the input variables
+weightVar <- classifyNBA$weights
+weightVar
 
-# Fit the random forest model
-fitRF <- mpgRF %>%
-  fit(high_mpg ~ ., data = mpgClassification)
-
-# Display variable importance
-print(fitRF$fit$importance)
+# Find the accuracy score
+score <- mean(testData$yPred == testData$game_result)
+score
