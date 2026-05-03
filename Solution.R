@@ -15,19 +15,24 @@ suppressPackageStartupMessages(library(tidyverse))
 fires <- read.csv("forestfires.csv")
 
 # Create a new data frame with the columns FFMC, DMC, DC, ISI, temp, RH, wind, and rain, in that order
-X <- fires %>% select(FFMC, DMC, DC, ISI, temp, RH, wind, rain)
+X <- fires |> select(FFMC, DMC, DC, ISI, temp, RH, wind, rain)
 
 # Calculate the correlation matrix for the data in the data frame X
-XCorr <- round(as.data.frame(cor(X)), 2)
+XCorr <- as.data.frame(round(cor(X, use = "complete.obs"), 2))
+print("Correlation matrix: ")
 print(XCorr)
 
 # Perform four-component factor analysis on the scaled data.
-firePCA <- princomp(X, cor = TRUE, scores = TRUE)
+pcaModel <- princomp(X, cor = TRUE)
+print("PCA summary: ")
+print(pcaModel)
 
 # Print the factors and the explained variance.
-eigenvectors <- unclass(loadings(firePCA))[, 1:4]
+eigenvectors <- pcaModel$loadings[,1:4]
+print("Eigenvectors: ")
 print(eigenvectors)
 
-eigenvalues <- # Your code here
+eigenvalues <- (pcaModel$sdev)^2
+
 print("Explained variance: ")
-print(eigenvalues)
+print(eigenvalues[1:4])
