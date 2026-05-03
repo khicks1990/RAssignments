@@ -43,15 +43,17 @@ classifyNBA <- neuralnet(
   algorithm = "backprop"
 ) # Your code here
 
+
 # Create a list of predictions from the test features
-yPred <- compute(classifyNBA, testData[, c("pts", "elo_i", "win_equiv")])$net.result # Your code here
+yPred <- predict(classifyNBA, newdata = testData) 
+
 testData$yPred <- as.factor(as.numeric(yPred[, 1] >= 0.5))
 
 # Find the weights for the input variables
 weightVar <- classifyNBA$weights # Your code here
-weightVar
+print(weightVar)
 
 # Find the accuracy score
 testData$game_result <- as.factor(testData$game_result)
 score <- accuracy(testData, truth = game_result, estimate = yPred) # Your code here
-score
+print(score)
