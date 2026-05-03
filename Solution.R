@@ -39,15 +39,14 @@ print(fitClassTree)
 # Initialize a random forest classifier with 300 trees and 2 variables tried at each split
 set.seed(14092022)
 mpgRF <- rand_forest(mtry = 2, trees = 300) %>%
-  set_engine("ranger", importance = "permutation") %>%
+  set_engine("ranger", importance = "impurity") %>%
   set_mode("classification")
 
+# Fit the random forest model
 fitRF <- mpgRF %>%
   fit(high_mpg ~ ., data = mpgClassification)
 
-rf_fit <- extract_fit_engine(fitRF)$fit
-print(rf_fit$variable.importance)
-
-rf_fit <- extract_fit_engine(fitRF)$fit
-print(rf_fit$call)
-print(rf_fit$importance)
+# Display variable importance
+fitRF %>%
+  extract_fit_parsnip() %>%
+  vip()
