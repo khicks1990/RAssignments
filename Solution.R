@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidymodels", "neuralnet", "rsample")
+packages <- c()
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -36,6 +36,7 @@ testData <- testing(NBAScaledSplit)
 classifyNBA <- neuralnet(
   game_result ~ pts + elo_i + win_equiv,
   data = trainData,
+  hidden = 0,
   learningrate = 0.05,
   stepmax = 20000,
   linear.output = FALSE,
@@ -43,13 +44,13 @@ classifyNBA <- neuralnet(
 )
 
 # Create a list of predictions from the test features
-yPred <- neuralnet::compute(classifyNBA, testData[, c("pts", "elo_i", "win_equiv")])
-testData$yPred <- as.factor(as.numeric(yPred$net.result >= 0.5))
+yPred <- # Your code here
+testData$yPred <- as.factor(as.numeric(yPred[, 1] >= 0.5))
 
 # Find the weights for the input variables
 weightVar <- classifyNBA$weights
 weightVar
 
 # Find the accuracy score
-score <- mean(testData$yPred == testData$game_result)
+score <- accuracy_vec(truth = as.factor(testData$game_result), estimate = testData$yPred)
 score
