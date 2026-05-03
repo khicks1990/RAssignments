@@ -49,6 +49,4 @@ fitRF <- mpgRF %>%
   fit(high_mpg ~ ., data = mpgClassification)
 
 # Display variable importance
-fitRF %>%
-  extract_fit_parsnip() %>%
-  vip()
+print(fitRF$fit$importance)
