@@ -24,7 +24,7 @@ NBA$game_result <- ifelse(NBA$game_result == "L",0,1)
 
 # Create a duplicate of NBA called NBAScaled and then scale the features
 NBAScaled <- NBA
-NBAScaled[, c("pts", "elo_i", "win_equiv")] <- scale(NBA[, c("pts", "elo_i", "win_equiv")])
+NBAScaled[, c("pts", "elo_i", "win_equiv")] <- scale(NBAScaled[, c("pts", "elo_i", "win_equiv")]) # Your code here
 
 # Split the data into train and test sets
 NBAScaledSplit <- initial_split(NBAScaled, prop = 0.70)
@@ -33,23 +33,25 @@ trainData <- training(NBAScaledSplit)
 testData <- testing(NBAScaledSplit)
 
 # Fit a perceptron model with a learning rate of 0.05 and 20000 epochs
-classifyNBA <- neuralnet(game_result ~ pts + elo_i + win_equiv,
+classifyNBA <- neuralnet(
+  game_result ~ pts + elo_i + win_equiv,
   data = trainData,
   hidden = 0,
   learningrate = 0.05,
-  stepmax = 20000,
+  stepmax = 20000, 
   linear.output = FALSE,
-  algorithm ="backprop")
+  algorithm = "backprop"
+) # Your code here
 
 # Create a list of predictions from the test features
-yPred <- compute(classifyNBA, testData[, c("pts", "elo_i", "win_equiv")])$net.result
-
+yPred <- compute(classifyNBA, testData[, c("pts", "elo_i", "win_equiv")])$net.result # Your code here
 testData$yPred <- as.factor(as.numeric(yPred[, 1] >= 0.5))
 
 # Find the weights for the input variables
-weightVar <- classifyNBA$weights
-print(weightVar)
+weightVar <- classifyNBA$weights # Your code here
+weightVar
 
 # Find the accuracy score
-score <- accuracy(testData, truth = as.factor(game_result), estimate = yPred)
-print(score)
+testData$game_result <- as.factor(testData$game_result)
+score <- accuracy(testData, truth = game_result, estimate = yPred) # Your code here
+score
