@@ -18,18 +18,27 @@ heart <- read.csv("heart.csv")
 heart$target <- as.factor(heart$target)
 
 # Initialize the model with XGBoost and 50 trees
-boostModel <- boost_tree(trees = 50) |>
-  set_engine("xgboost") |>
+# Your code here
+heartModel <- boost_tree(trees = 50) %>%
+  set_engine("xgboost") %>%
   set_mode("classification")
 
+
 # Fit the model
-boostModel_fit <- boostModel |>
+# Your code here
+heartFit <- heartModel %>%
   fit(target ~ age + cp + trestbps + chol + fbs + restecg + thalach + exang + oldpeak,
       data = heart)
 
 # Add predictions and class probabilities to heart dataset
-heart <- augment(boostModel_fit, new_data = heart)
+# Your code here
+heartPred <- predict(heartFit, new_data = heart)
+heartProb <- predict(heartFit, new_data = heart, type = "prob")
+heart <- bind_cols(heart, heartPred, heartProb)
+
+print(head(heart))
+
 
 # Confusion matrix using the caret package
-heartConf <- confusionMatrix(data = heart$.pred_class, reference = heart$target)
+heartConf <- confusionMatrix(heart$.pred_class, heart$target)
 heartConf
