@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c()
+packages <- c("tidyverse", "tidymodels", "caret", "xgboost")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -9,49 +9,39 @@ for (pkg in packages) {
   }
 }
 
-# Load packages
-suppressPackageStartupMessages(library(rsample))
-suppressPackageStartupMessages(library(neuralnet))
+# Import the necessary packages
+suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(tidymodels))
+suppressPackageStartupMessages(library(caret))
 
-# Load input into a dataframe
+heart <- read.csv("heart.csv")
+heart$target <- as.factor(heart$target)
+
 set.seed(42)
-df <- read.csv("nbaallelo_log.csv")
-NBA <- df[sample(nrow(df), size = 1000), ]
 
-# Encode game_result as numeric (0 = Loss, 1 = Win)
-NBA$game_result <- ifelse(NBA$game_result == "L", 0, 1)
+# Initialize the model with XGBoost and 50 trees
+boost_model <-boost_tree(
+  trees=50,
+  engine="xgboost",
+  mode="classification"
+)
 
-# Create a duplicate of NBA called NBAScaled and scale the features
-NBAScaled <- NBA
-NBAScaled[, c("pts", "elo_i", "win_equiv")] <- scale(NBAScaled[, c("pts", "elo_i", "win_equiv")]) # Your code here
+# Fit the model
+boost_fit <- boost_model %>%
+  fit(
+    target ~ age + cp + trestbps + chol + fbs + restecg + thalach + exang + oldpeak,
+    data = heart
+  )
 
-# Split the data into train and test sets
-NBAScaledSplit <- initial_split(NBAScaled, prop = 0.70)
+# Add predictions and class probabilities to heart dataset
+heart$pred_class <- predict(boost_fit, heart, type="class")$.pred_class
+heart_probs <- predict(boost_fit, heart, type="prob")
+heart <- cbind(heart, heart_probs)
 
-trainData <- training(NBAScaledSplit)
-testData <- testing(NBAScaledSplit)
-
-# Fit a multilayer perceptron with one hidden layer of 3 neurons,
-# learning rate 0.03, and 15000 epochs
-classifyNBA_MLP <- neuralnet(
-  game_result ~ pts + elo_i + win_equiv,
-  data = trainData,
-  hidden = 3,
-  learningrate = 0.03,
-  stepmax = 15000,
-  linear.output = FALSE,
-  algorithm = "backprop"
-) # Your code here
-
-# Create predictions on the test set
-yPred <- predict(classifyNBA_MLP, newdata = testData)  # ✓
-testData$yPred <- as.factor(as.numeric(yPred[, 1] >= 0.5))
-
-# Extract and print the network weights
-weightVar <- classifyNBA_MLP$weights # Your code here
-weightVar
-
-# Compute the accuracy score
-score <- mean(testData$yPred == as.factor(testData$game_result)) # Your code here
-score
+# Confusion matrix using the caret package
+heartConf <- caret::confusionMatrix(
+  data=heart$pred_class,
+  reference=heart$target
+)
+heartConf
+#done
