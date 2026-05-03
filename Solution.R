@@ -33,8 +33,9 @@ fitClassTree
 
 # Initialize a random forest classifier with 300 trees and 2 variables tried at each split
 set.seed(14092022)
-mpgRF <- rand_forest(mode = "classification", mtry = 2, trees = 300) |> set_engine("randomForest")
-
+mpgRF <- rand_forest(mode = "classification", mtry = 2, trees = 300) |>
+  set_engine("randomForest", importance = TRUE)
+  
 # Fit the random forest model
 fitRF <- mpgRF |> fit(high_mpg ~ ., data = mpgClassification)
 
