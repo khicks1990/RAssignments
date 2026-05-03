@@ -44,7 +44,7 @@ classifyNBA <- neuralnet(
 )
 
 # Create a list of predictions from the test features
-yPred <- # Your code here
+yPred <- predict(classifyNBA, newdata = testData) 
 testData$yPred <- as.factor(as.numeric(yPred[, 1] >= 0.5))
 
 # Find the weights for the input variables
