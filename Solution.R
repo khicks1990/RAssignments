@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidymodels", "baguette", "rpart")
+packages <- c("tidymodels", "baguette")
 
 # Install packages if not already installed
 for (pkg in packages) {
@@ -12,35 +12,33 @@ for (pkg in packages) {
 # Import the necessary packages
 suppressPackageStartupMessages(library(tidymodels))
 suppressPackageStartupMessages(library(baguette))
-suppressPackageStartupMessages(library(rpart))
 
 heart <- read.csv("heart.csv")
 
 # Read in the tree depth
-inputs <- readLines(con = "stdin", n = 1, warn=FALSE)
-depth <- as.integer(inputs)
+inputs <- as.integer(x = readLines(con = "stdin", n = 1, warn=FALSE))
+depth = as.integer(inputs[1])
 
 if (is.na(depth)) {
-  depth <- 3
+  depth = 3
 }
 
 set.seed(42)
 
 # Initialize the model with user-defined depth
-bag_model <- bag_tree() %>%
-  set_engine("rpart", control = rpart.control(maxdepth = depth)) %>%
+heartModel <- bag_tree(cost_complexity = 0, tree_depth = depth, min_n = 2) %>%
+  set_engine("rpart", times = 25) %>%
   set_mode("regression")
 
 # Fit the model
-bag_fit <- fit(
-  bag_model,
-  chol ~ age + cp + trestbps + fbs + restecg + thalach + exang + oldpeak,
-  data = heart)
+heartFit <- heartModel %>%
+  fit(chol ~ age + cp + trestbps + fbs + restecg + thalach + exang + oldpeak,
+      data = heart)
 
 # Add predictions to heart dataset
-heart$predicted_chol <- predict(bag_fit, heart)$.pred
+heartPred <- predict(heartFit, new_data = heart)
+heart <- bind_cols(heart, heartPred)
+print(head(heart))
 
 # Calculate regression metrics
-results <- yardstick::metrics(heart, truth=chol, estimate = predicted_chol)
-
-print(results)
+metrics(heart, truth = chol, estimate = .pred)
