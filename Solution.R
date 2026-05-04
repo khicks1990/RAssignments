@@ -1,5 +1,5 @@
 # add needed packages here separated by commas
-packages <- c("tidymodels", "baguette")
+packages <- c("tidymodels")
 
 # Install packages if not already installed
 for (pkg in packages) {
